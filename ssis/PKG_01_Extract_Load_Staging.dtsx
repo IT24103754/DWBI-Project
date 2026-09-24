@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:refId="Package"
+  DTS:CreationDate="2026-09-24T23:00:00Z"
+  DTS:CreatorName="Antigravity"
+  DTS:DTSID="{9841B9F5-82A1-4F98-84CE-D7140B8F5181}"
+  DTS:ExecutableType="Microsoft.Package"
+  DTS:LastModifiedProductVersion="16.0.5035.3"
+  DTS:LocaleID="1033"
+  DTS:ObjectName="PKG_01_Extract_Load_Staging"
+  DTS:PackageType="5"
+  DTS:VersionBuild="1"
+  DTS:VersionGUID="{7B2CE83E-DE19-4F54-AE3B-8C46EF8CD6B2}">
+  <DTS:Property DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:Variables />
+  <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\Execute SQL - Staging Schema Validation"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:DTSID="{A424074F-769F-441F-A694-D97127C75FB3}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Execute SQL - Staging Schema Validation"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2022; © 2022 Microsoft Corporation; All Rights Reserved;">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask"
+          SQLTask:Connection="{C5D474F2-53A5-4221-B347-DE2858169A1C}"
+          SQLTask:SqlStatementSource="SELECT 1 FROM sys.schemas WHERE name = 'stg';" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+  </DTS:Executables>
+  <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
+<!--Package layout information-->
+<GraphLayout xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph">
+  <NodeLayout
+    Size="250,42"
+    Id="Package\Execute SQL - Staging Schema Validation"
+    TopLeft="60,60" />
+</GraphLayout>
+]]></DTS:DesignTimeProperties>
+</DTS:Executable>

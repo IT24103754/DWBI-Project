@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-09-24" agent="IT3101 DWBI Project" version="21.0.0">
+  <diagram name="Architecture" id="architecture">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- SOURCE LAYER -->
+        <mxCell id="10" value="SOURCE LAYER" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;fontStyle=1;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="360" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="11" value="CSV Files (9 Olist CSVs)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="60" y="90" width="150" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="12" value="SQL Server OLTP&#xa;(Staging as source)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="60" y="160" width="150" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="13" value="REST API&#xa;(Frankfurter Exchange Rates)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="230" y="125" width="150" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- ETL LAYER -->
+        <mxCell id="20" value="DATA INTEGRATION LAYER (ETL)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;fontStyle=1;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="460" y="40" width="340" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="21" value="PKG_01&#xa;Extract &amp; Load Staging&#xa;(Python / SSIS)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="475" y="90" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="22" value="PKG_02&#xa;Exchange Rate Fetch&#xa;(Python API)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="640" y="90" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="23" value="PKG_03&#xa;Transform &amp; Load Dims&#xa;(Python)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="475" y="165" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="24" value="PKG_04&#xa;Transform &amp; Load Fact&#xa;(Python)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="640" y="165" width="140" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- STORAGE LAYER -->
+        <mxCell id="30" value="STORAGE LAYER (SQL Server 2025)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=13;fontStyle=1;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="860" y="40" width="360" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="31" value="Staging Schema (stg.*)&#xa;10 tables | 1.55M rows" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="875" y="90" width="150" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="32" value="EDW Star Schema (dw.*)&#xa;fact: 112,650 rows&#xa;5 dims + dim_date" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="875" y="155" width="150" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="33" value="Data Mart Views&#xa;logistics_mart&#xa;sales_mart" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="1045" y="120" width="150" height="65" as="geometry" />
+        </mxCell>
+
+        <!-- SEMANTIC LAYER -->
+        <mxCell id="40" value="SEMANTIC / OLAP LAYER" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=13;fontStyle=1;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="460" y="310" width="360" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="41" value="SSAS Tabular Model&#xa;(OlistTabularModel)&#xa;DAX Measures + KPIs&#xa;Hierarchies: Date, Geography" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="490" y="355" width="300" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- PRESENTATION LAYER -->
+        <mxCell id="50" value="PRESENTATION LAYER" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=13;fontStyle=1;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="460" y="530" width="760" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="51" value="Page 1 – Executive Summary&#xa;KPI cards, trend sparkline&#xa;Avg Review Score gauge" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="475" y="580" width="220" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="52" value="Page 2 – Trend Analysis&#xa;Monthly revenue line chart&#xa;Top-10 category bar chart&#xa;Delay vs review scatter" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="720" y="580" width="220" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="53" value="Page 3 – Geographic Analysis&#xa;Map (lat/lng bubbles)&#xa;State slicers, drill-down&#xa;Hierarchy roll-up" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="965" y="580" width="220" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- ARROWS Source -> ETL -->
+        <mxCell id="60" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="11" target="21" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="61" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="12" target="21" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="62" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="13" target="22" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ARROWS ETL -> Storage -->
+        <mxCell id="63" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="21" target="31" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="64" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="22" target="31" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="65" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="23" target="32" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="66" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="24" target="32" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="67" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="32" target="33" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ARROWS Storage -> SSAS -->
+        <mxCell id="68" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="32" target="41" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="69" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="33" target="41" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ARROWS SSAS -> Power BI -->
+        <mxCell id="70" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="41" target="51" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="71" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="41" target="52" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="72" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="41" target="53" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+
+  <diagram name="Star Schema" id="starschema">
+    <mxGraphModel>
+      <root>
+        <mxCell id="0" /><mxCell id="1" parent="0" />
+
+        <!-- FACT TABLE -->
+        <mxCell id="100" value="&lt;b&gt;fact_order_items&lt;/b&gt;&#xa;─────────────────&#xa;order_item_key (PK)&#xa;order_id (DD)&#xa;order_item_id (DD)&#xa;customer_key (FK)&#xa;product_key (FK)&#xa;seller_key (FK)&#xa;date_key (FK)&#xa;geo_key (FK)&#xa;─────────────────&#xa;price_brl&#xa;price_usd&#xa;freight_value&#xa;review_score&#xa;delivery_delay_days&#xa;order_status (DD)&#xa;payment_type (DD)&#xa;payment_value&#xa;─────────────────&#xa;Grain: 1 row per order item&#xa;Rows: 112,650" style="shape=table;startSize=30;container=0;collapsible=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="550" y="300" width="220" height="420" as="geometry" />
+        </mxCell>
+
+        <!-- DIM DATE -->
+        <mxCell id="101" value="&lt;b&gt;dim_date&lt;/b&gt;&#xa;─────────────────&#xa;date_key (PK) YYYYMMDD&#xa;full_date&#xa;day / month / quarter&#xa;year&#xa;month_name&#xa;weekday_name&#xa;is_weekend&#xa;─────────────────&#xa;Rows: 1,461&#xa;Hierarchy: Year&gt;Qtr&gt;Mon&gt;Day" style="shape=table;startSize=30;container=0;collapsible=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="550" y="60" width="220" height="220" as="geometry" />
+        </mxCell>
+
+        <!-- DIM CUSTOMER -->
+        <mxCell id="102" value="&lt;b&gt;dim_customer&lt;/b&gt;&#xa;─────────────────&#xa;customer_key (PK)&#xa;customer_id&#xa;city&#xa;state&#xa;zip_prefix&#xa;─────────────────&#xa;Rows: 99,441&#xa;SCD Type 1" style="shape=table;startSize=30;container=0;collapsible=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="120" y="290" width="180" height="200" as="geometry" />
+        </mxCell>
+
+        <!-- DIM PRODUCT -->
+        <mxCell id="103" value="&lt;b&gt;dim_product&lt;/b&gt;&#xa;─────────────────&#xa;product_key (PK)&#xa;product_id&#xa;category_pt&#xa;category_en&#xa;weight_g / length_cm&#xa;height_cm / width_cm&#xa;─────────────────&#xa;Rows: 32,951&#xa;SCD Type 1" style="shape=table;startSize=30;container=0;collapsible=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="120" y="520" width="180" height="210" as="geometry" />
+        </mxCell>
+
+        <!-- DIM SELLER -->
+        <mxCell id="104" value="&lt;b&gt;dim_seller&lt;/b&gt;&#xa;─────────────────&#xa;seller_key (PK)&#xa;seller_id&#xa;city&#xa;state&#xa;zip_prefix&#xa;─────────────────&#xa;Rows: 3,095&#xa;SCD Type 1" style="shape=table;startSize=30;container=0;collapsible=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="290" width="180" height="200" as="geometry" />
+        </mxCell>
+
+        <!-- DIM GEOGRAPHY -->
+        <mxCell id="105" value="&lt;b&gt;dim_geography&lt;/b&gt;&#xa;─────────────────&#xa;geo_key (PK)&#xa;zip_prefix&#xa;lat / lng&#xa;city&#xa;state&#xa;─────────────────&#xa;Rows: 19,015&#xa;Hierarchy: State&gt;City" style="shape=table;startSize=30;container=0;collapsible=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="520" width="180" height="210" as="geometry" />
+        </mxCell>
+
+        <!-- FK Lines -->
+        <mxCell id="110" style="edgeStyle=orthogonalEdgeStyle;endArrow=ERmany;startArrow=ERone;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" source="101" target="100" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="111" style="edgeStyle=orthogonalEdgeStyle;endArrow=ERmany;startArrow=ERone;exitX=1;exitY=0.5;entryX=0;entryY=0.3;" edge="1" source="102" target="100" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="112" style="edgeStyle=orthogonalEdgeStyle;endArrow=ERmany;startArrow=ERone;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="103" target="100" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="113" style="edgeStyle=orthogonalEdgeStyle;endArrow=ERmany;startArrow=ERone;exitX=0;exitY=0.5;entryX=1;entryY=0.3;" edge="1" source="104" target="100" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="114" style="edgeStyle=orthogonalEdgeStyle;endArrow=ERmany;startArrow=ERone;exitX=0;exitY=0.5;entryX=1;entryY=0.5;" edge="1" source="105" target="100" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,511 @@
+=== PAGE 1 ===
+<Module Code> : <Module Name>
+<Academic year> <Semester><Calander Year> A S S I G N M E N T  <  #  >
+BSc (Hons) in < Program Name>
+Assignment Title Design and Implementation of a Data Warehouse and 
+Business Intelligence Solution
+Learning outcomes covered  LO1 – LO4
+Assignment Mode Take-home
+Maximum Marks  200
+Contribution to the Final
+Grade
+20%
+Date published
+Deadline for submissions
+Mode of Submission Report + Technical Files
+Assignment Description
+Students are required to design and implement an end-to-end Data Warehouse and Business  
+Intelligence solution using a selected real-world business scenario. The activity requires  
+students to collect and prepare operational data sources, integrate data using ETL processes,  
+design a dimensional data warehouse, develop analytical solutions, and present meaningful  
+business insights through BI dashboards.
+Students must demonstrate practical understanding of concepts covered throughout the  
+module, including data warehouse architecture, dimensional modelling, ETL processes, OLAP 
+analysis, and business intelligence reporting.
+Students should document all implementation steps followed during the activity. The report  
+should include relevant diagrams, screenshots, explanations, and analytical findings.
+Task 1: Dataset Selection and Business Scenario Identification (10 Marks)
+Students must select a suitable real-world dataset representing an operational business  
+environment.
+The selected dataset should:
+ Represent an OLTP system. 
+ Contain sufficient records for analytical processing. 
+ Include multiple attributes suitable for dimensional analysis. 
+ Support the creation of fact and dimension tables. 
+ Represent a realistic business scenario. 
+Suggested domains:
+
+=== PAGE 2 ===
+ Retail / E-commerce, Healthcare, Banking and Finance, Tourism, Education,  
+Transportation, Social Media, IoT and Smart Cities 
+Students must document:
+Dataset Overview
+ Business domain 
+ Purpose of the system 
+ Business problem addressed 
+ Dataset source 
+ Dataset format 
+ Number of records 
+ Attributes description 
+Students should explain why the selected dataset is suitable for developing a Data Warehouse 
+and BI solution.
+Task 2: Data Source Identification and Preparation (10 Marks)
+Identify and prepare the data sources required for the solution.  Students should use multiple  
+source types where possible.
+Examples:
+ CSV files 
+ Excel files 
+ Relational databases 
+ JSON files 
+ APIs 
+Documentation should include:
+ Description of each data source 
+ Source format 
+ Available attributes 
+ Relationship between sources 
+ Data preparation steps 
+Students should explain how data from different operational systems can be integrated into a  
+unified analytical environment.
+Task 3: Data Warehouse Architecture Design (10 Marks)
+Design a high-level Data Warehouse and Business Intelligence architecture.
+The architecture should include:
+
+=== PAGE 3 ===
+Data Source Layer
+Examples:
+ Operational databases 
+ External files 
+ Application systems 
+Data Integration Layer
+Include:
+ Extraction 
+ Transformation 
+ Loading process 
+Storage Layer
+Include:
+ Staging area 
+ Enterprise Data Warehouse 
+ Data Mart 
+Presentation Layer
+Include:
+ OLAP 
+ Reporting tools 
+ BI dashboards 
+Students must provide:
+ Architecture diagram 
+ Explanation of each component 
+Task 4: Dimensional Data Warehouse Design and Implementation (20 Marks)
+Design and implement a dimensional data warehouse. Students should apply dimensional  
+modelling principles.  The solution should include:
+Fact Table
+
+=== PAGE 4 ===
+Define:
+ Business process 
+ Grain 
+ Measures 
+ Foreign keys 
+Dimension Tables
+Include appropriate dimensions such as:
+ Customer Dimension 
+ Product Dimension 
+ Location Dimension 
+ Date Dimension 
+Students should implement:
+ Star Schema or Snowflake Schema 
+ Primary keys and foreign keys 
+ Relationships and Hierarchies 
+Documentation should include:
+ Schema diagram 
+ Table descriptions 
+ Design assumptions 
+Task 5: ETL Process Development (20 Marks)
+Develop a complete ETL pipeline.
+Extract
+Extract data from selected sources.
+Document:
+ Extraction method 
+ Source connection 
+ Data extraction process 
+Transform
+Perform required data transformations:
+Examples:
+ Missing value handling 
+ Duplicate removal 
+ Data cleansing 
+ Standardisation 
+
+=== PAGE 5 ===
+ Data type conversion 
+ Aggregation 
+ Derived attribute creation 
+Load
+Load transformed data into:
+ Dimension tables 
+ Fact tables 
+Students should document:
+ ETL workflow 
+ Transformation logic 
+ Loading sequence 
+ Validation results 
+Task 6: Data Mart Development (10 Marks)
+Create at least one department-specific Data Mart.
+Students must explain:
+ Purpose of the data mart 
+ Target users 
+ Analytical benefits 
+Task 7: OLAP Analysis and Business Intelligence Dashboard Development (15 Marks)
+Develop interactive dashboards using:
+ Microsoft Power BI or Tableau 
+The dashboard should contain:
+Report Page 1: Executive Summary
+Include:
+
+=== PAGE 6 ===
+ KPIs 
+ Summary cards 
+ Overall performance indicators 
+Report Page 2: Trend Analysis
+Include:
+ Time-based analysis 
+ Line charts 
+ Comparison charts 
+Report Page 3: Interactive Analysis
+Include:
+ Filters, Slicers, Drill-down, Roll-up 
+Task 8: Business Insights and Recommendations (5 Marks)
+Analyse dashboard outputs and provide meaningful insights. Minimum five insights should be 
+presented.
+Examples:
+ Sales trends 
+ Customer patterns 
+ Operational performance 
+ Regional comparison 
+ Future recommendations 
+Students should explain how the insights support business decision-making.
+Usage of AI: The use of AI tools is allowed for this assessment as a supporting tool for learning 
+and development. Students may use AI tools to assist with brainstorming, improving  
+explanations, generating ideas, debugging, and refining their work. However, students must  
+ensure that the final submission reflects their own understanding and implementation. AI-
+generated content should be critically evaluated, verified, and appropriately adapted. Students 
+must not use AI to fully generate their assignment, create false results, or replace their own  
+technical work. Any use of AI tools should be acknowledged in the report with a brief  
+explanation of how AI was used. This assessment follows the CLEAR framework, encouraging 
+responsible and transparent use of AI.
+
+=== PAGE 7 ===
+Marking Scheme
+Criteria Excellent Good Satisfactory Poor Very Poor
+Criterion 1 
+– Business 
+Scenario, 
+Dataset & 
+Data 
+Sources 
+(Tasks 1–2)
+Highly suitable 
+realistic OLTP 
+dataset; business 
+problem, source, 
+attributes and 
+relationships are 
+comprehensive 
+and well justified. 
+Multiple sources 
+are appropriately 
+prepared and 
+integration is 
+clearly explained.
+Suitable 
+dataset and 
+business 
+scenario with 
+good 
+documentatio
+n. Sources 
+and 
+preparation 
+are mostly 
+complete 
+with minor 
+omissions.
+ Acceptable 
+dataset and 
+basic scenario. 
+Sources are 
+identified but 
+justification, 
+preparation or 
+relationships 
+lack depth.
+Weak 
+dataset/scenari
+o selection 
+with limited 
+source 
+description and 
+preparation. 
+Important 
+requirements 
+are missing.
+ Unsuitable or 
+inadequately 
+documented 
+dataset; 
+little/no 
+meaningful 
+source 
+identification 
+or 
+preparation.
+Criterion 2 
+– DW 
+Architectur
+e & 
+Dimensiona
+l Modelling 
+(Tasks 3–4)
+Excellent end-to-
+end architecture 
+with clearly 
+justified layers. 
+Dimensional 
+model has 
+appropriate grain, 
+fact/measures, 
+dimensions, keys, 
+hierarchies and 
+relationships. 
+Schema is 
+technically 
+correct and 
+professionally 
+documented.
+Sound 
+architecture 
+and 
+dimensional 
+model with 
+appropriate 
+components 
+and mostly 
+correct 
+relationship
+s; minor 
+design/docu
+mentation 
+issues.
+Functional basic 
+architecture and 
+schema, but 
+some modelling 
+decisions, 
+relationships, 
+grain or 
+documentation 
+lack clarity.
+Major 
+weaknesses in 
+architecture or 
+dimensional 
+design; 
+incomplete 
+schema, 
+incorrect 
+relationships or 
+insufficient 
+justification.
+Architecture/
+model is 
+absent, largely 
+incorrect or 
+does not 
+demonstrate 
+dimensional 
+modelling 
+principles.
+Criterion 3 
+– ETL 
+Implement
+ation & 
+Data Mart 
+Complete, robust 
+and reproducible 
+ETL pipeline 
+covering 
+extraction, 
+ETL pipeline 
+and Data 
+Mart operate 
+correctly 
+with good 
+Basic working 
+ETL and Data 
+Mart with 
+limited 
+transformation 
+Partially 
+functioning 
+ETL/Data 
+Mart; 
+significant 
+ETL/Data 
+Mart is 
+absent, non-
+functional or 
+demonstrates 
+
+=== PAGE 8 ===
+(Tasks 5–6) meaningful 
+transformations, 
+loading sequence 
+and validation. 
+Data Mart is 
+correctly 
+implemented and 
+strongly aligned 
+to users and 
+analytical 
+requirements. 
+Clear process 
+evidence is 
+provided.
+transformatio
+ns and 
+documentatio
+n; minor 
+omissions in 
+validation or 
+process 
+evidence.
+complexity, 
+validation, 
+documentation 
+or justification.
+errors, weak 
+transformation
+s or inadequate 
+evidence of 
+successful 
+loading.
+little 
+understanding 
+of the 
+required 
+process.
+Criterion 4 
+– OLAP & 
+BI 
+Dashboard 
+(Task 7)
+Professional, 
+interactive BI 
+solution with 
+meaningful KPIs, 
+executive 
+summary, trend 
+analysis, suitable 
+visualisations, 
+filters/slicers and 
+effective drill-
+down/roll-up. 
+Strong usability 
+and analytical 
+value.
+Well-
+designed 
+functional 
+dashboard 
+containing 
+most 
+required 
+analytical 
+and 
+interactive 
+features; 
+minor 
+usability/anal
+ytical issues.
+Functional 
+dashboard with 
+basic KPIs, 
+charts and 
+interaction but 
+limited 
+analytical 
+depth or design 
+quality.
+Dashboard is 
+incomplete or 
+weakly 
+designed with 
+limited 
+functionality, 
+inappropriate 
+visuals or 
+missing 
+interactive 
+features.
+Dashboard is 
+absent, largely 
+non-
+functional or 
+does not 
+satisfy the 
+BI/OLAP 
+requirements.
+Criterion 5 
+– Business 
+Insights & 
+Recommen
+dations 
+(Task 8)
+Five or more 
+clear, evidence-
+based insights 
+derived directly 
+from dashboard 
+results. 
+Recommendation
+s are specific, 
+practical and 
+strongly linked to 
+business decision-
+making.
+Good 
+insights 
+supported by 
+dashboard 
+evidence 
+with relevant 
+recommendat
+ions and 
+clear 
+business 
+relevance.
+Required 
+insights are 
+provided but 
+analysis or 
+recommendatio
+ns are 
+relatively 
+descriptive/bas
+ic.
+Limited or 
+weakly 
+supported 
+insights; 
+recommendatio
+ns lack 
+relevance or 
+connection to 
+dashboard 
+findings.
+Insufficient, 
+unsupported 
+or incorrect 
+insights and 
+recommendati
+ons.
+

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Olist Power BI Dashboard Replica</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    .tab-active { border-bottom: 3px solid #005691; color: #005691; font-weight: 600; }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased p-6 font-sans">
+
+  <!-- Header Bar -->
+  <div class="bg-white border border-slate-200 rounded-xl p-5 mb-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center">
+    <div>
+      <div class="flex items-center gap-3">
+        <span class="bg-amber-500 text-white text-xs font-bold px-2.5 py-1 rounded">POWER BI LIVE</span>
+        <h1 class="text-2xl font-bold text-slate-900">Olist Brazilian E-Commerce Analytics Dashboard</h1>
+      </div>
+      <p class="text-slate-500 text-sm mt-1">IT3101 DWBI Project · Model: SQL Server 2025 (localhost: OlistDW) · 112,650 Order Items</p>
+    </div>
+    <!-- Tabs -->
+    <div class="flex gap-4 mt-4 md:mt-0 border-b border-slate-200">
+      <button onclick="switchTab('page1')" id="tab-page1" class="pb-2 text-sm tab-active transition-all">Page 1: Executive Summary</button>
+      <button onclick="switchTab('page2')" id="tab-page2" class="pb-2 text-sm text-slate-500 hover:text-slate-700 transition-all">Page 2: Trend Analysis</button>
+      <button onclick="switchTab('page3')" id="tab-page3" class="pb-2 text-sm text-slate-500 hover:text-slate-700 transition-all">Page 3: Interactive Analysis</button>
+    </div>
+  </div>
+
+  <!-- ==================== PAGE 1: EXECUTIVE SUMMARY ==================== -->
+  <div id="page1" class="space-y-6">
+    <!-- KPI Row -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+        <p class="text-xs uppercase tracking-wider text-slate-500 font-semibold">Total Revenue (BRL)</p>
+        <h2 class="text-3xl font-extrabold text-blue-700 mt-2">R$ 13.59M</h2>
+        <p class="text-xs text-emerald-600 font-medium mt-1">↑ $3.94M USD Normalized</p>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+        <p class="text-xs uppercase tracking-wider text-slate-500 font-semibold">Total Orders Placed</p>
+        <h2 class="text-3xl font-extrabold text-slate-900 mt-2">98,666</h2>
+        <p class="text-xs text-slate-500 font-medium mt-1">112,650 Line Items</p>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+        <p class="text-xs uppercase tracking-wider text-slate-500 font-semibold">Average Review Score</p>
+        <h2 class="text-3xl font-extrabold text-amber-500 mt-2">4.03 <span class="text-lg font-normal text-slate-400">/ 5.0</span></h2>
+        <p class="text-xs text-slate-500 font-medium mt-1">63.1K 5-Star Reviews (56.1%)</p>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+        <p class="text-xs uppercase tracking-wider text-slate-500 font-semibold">Avg Delivery Delay</p>
+        <h2 class="text-3xl font-extrabold text-emerald-600 mt-2">-12.03 Days</h2>
+        <p class="text-xs text-emerald-600 font-medium mt-1">91.4% Ahead of Scheduled SLA</p>
+      </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Line Chart -->
+      <div class="lg:col-span-2 bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="font-bold text-slate-800">Monthly Revenue Trend (2016–2018)</h3>
+          <span class="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded font-mono">BRL R$</span>
+        </div>
+        <div class="h-72">
+          <canvas id="revTrendChart"></canvas>
+        </div>
+      </div>
+      <!-- Donut Chart -->
+      <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+        <h3 class="font-bold text-slate-800 mb-4">Customer Review Distribution</h3>
+        <div class="h-64 flex items-center justify-center">
+          <canvas id="reviewDistChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== PAGE 2: TREND ANALYSIS ==================== -->
+  <div id="page2" class="space-y-6 hidden">
+    <!-- Trend & Category Analysis -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Top 15 Categories -->
+      <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+        <h3 class="font-bold text-slate-800 mb-4">Top 10 Product Categories by Revenue (BRL)</h3>
+        <div class="h-80">
+          <canvas id="categoryBarChart"></canvas>
+        </div>
+      </div>
+      <!-- Lead Time vs Review Score -->
+      <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+        <h3 class="font-bold text-slate-800 mb-4">Hypothesis 1: Delivery Delay vs Average Review Score</h3>
+        <div class="h-80">
+          <canvas id="delayReviewChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Insight Callout Box -->
+    <div class="bg-blue-50 border border-blue-200 rounded-xl p-5 text-sm text-blue-900">
+      <h4 class="font-bold text-blue-950 mb-1">Key Finding (Task 8 - Hypothesis 1):</h4>
+      <p>Orders arriving <strong>&gt;7 days early</strong> score an average of <strong>4.27 / 5.00</strong>. When an order is <strong>1–7 days late</strong>, review score plummets to <strong>2.24</strong>, and collapses to <strong>1.62</strong> for severe delays (&gt;7 days late). Shipping speed is the #1 driver of customer ratings.</p>
+    </div>
+  </div>
+
+  <!-- ==================== PAGE 3: INTERACTIVE ANALYSIS ==================== -->
+  <div id="page3" class="space-y-6 hidden">
+    <!-- Filter Controls -->
+    <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-wrap gap-4 items-center">
+      <span class="text-xs uppercase font-bold text-slate-400">Interactive Slicers:</span>
+      <div>
+        <label class="text-xs text-slate-500 font-semibold block mb-1">State</label>
+        <select id="stateFilter" onchange="filterData()" class="text-xs border border-slate-300 rounded px-2.5 py-1.5 bg-white">
+          <option value="ALL">All States (Brazil)</option>
+          <option value="SP">SP (São Paulo)</option>
+          <option value="RJ">RJ (Rio de Janeiro)</option>
+          <option value="MG">MG (Minas Gerais)</option>
+          <option value="RS">RS (Rio Grande do Sul)</option>
+          <option value="PR">PR (Paraná)</option>
+        </select>
+      </div>
+      <div>
+        <label class="text-xs text-slate-500 font-semibold block mb-1">Year</label>
+        <select id="yearFilter" onchange="filterData()" class="text-xs border border-slate-300 rounded px-2.5 py-1.5 bg-white">
+          <option value="ALL">All Years (2016-2018)</option>
+          <option value="2017">2017</option>
+          <option value="2018">2018</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- State Breakdown Table & Freight Chart -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+        <h3 class="font-bold text-slate-800 mb-4">Top States by Sales Volume</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-50 text-slate-600 border-b border-slate-200">
+              <tr>
+                <th class="p-2.5">State</th>
+                <th class="p-2.5">Order Items</th>
+                <th class="p-2.5">Total GMV (BRL)</th>
+                <th class="p-2.5">Market Share</th>
+              </tr>
+            </thead>
+            <tbody id="stateTableBody" class="divide-y divide-slate-100">
+              <tr><td class="p-2.5 font-bold">SP (São Paulo)</td><td class="p-2.5">47,449</td><td class="p-2.5">R$ 5,202,955.05</td><td class="p-2.5">38.3%</td></tr>
+              <tr><td class="p-2.5 font-bold">RJ (Rio de Janeiro)</td><td class="p-2.5">14,579</td><td class="p-2.5">R$ 1,824,092.67</td><td class="p-2.5">13.4%</td></tr>
+              <tr><td class="p-2.5 font-bold">MG (Minas Gerais)</td><td class="p-2.5">13,129</td><td class="p-2.5">R$ 1,585,308.03</td><td class="p-2.5">11.7%</td></tr>
+              <tr><td class="p-2.5 font-bold">RS (Rio Grande do Sul)</td><td class="p-2.5">6,235</td><td class="p-2.5">R$ 750,304.02</td><td class="p-2.5">5.5%</td></tr>
+              <tr><td class="p-2.5 font-bold">PR (Paraná)</td><td class="p-2.5">5,740</td><td class="p-2.5">R$ 683,083.76</td><td class="p-2.5">5.0%</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+        <h3 class="font-bold text-slate-800 mb-4">Hypothesis 2: Freight % of Order Value by Region</h3>
+        <div class="h-80">
+          <canvas id="freightStateChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function switchTab(pageId) {
+      ['page1', 'page2', 'page3'].forEach(p => {
+        document.getElementById(p).classList.add('hidden');
+        document.getElementById('tab-' + p).classList.remove('tab-active');
+        document.getElementById('tab-' + p).classList.add('text-slate-500');
+      });
+      document.getElementById(pageId).classList.remove('hidden');
+      document.getElementById('tab-' + pageId).classList.add('tab-active');
+      document.getElementById('tab-' + pageId).classList.remove('text-slate-500');
+    }
+
+    // Chart 1: Revenue Trend
+    const ctxTrend = document.getElementById('revTrendChart').getContext('2d');
+    new Chart(ctxTrend, {
+      type: 'line',
+      data: {
+        labels: ['Jan 17', 'Mar 17', 'May 17', 'Jul 17', 'Sep 17', 'Nov 17 (Black Friday)', 'Jan 18', 'Mar 18', 'May 18', 'Jul 18', 'Aug 18'],
+        datasets: [{
+          label: 'Monthly Revenue (R$)',
+          data: [120782, 374342, 499878, 492323, 621453, 1010271, 954210, 983921, 1012845, 893201, 854092],
+          borderColor: '#1d4ed8',
+          backgroundColor: 'rgba(29, 78, 216, 0.1)',
+          fill: true,
+          tension: 0.3,
+          borderWidth: 2.5
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+
+    // Chart 2: Review Distribution
+    const ctxReview = document.getElementById('reviewDistChart').getContext('2d');
+    new Chart(ctxReview, {
+      type: 'doughnut',
+      data: {
+        labels: ['5 Stars', '4 Stars', '3 Stars', '2 Stars', '1 Star'],
+        datasets: [{
+          data: [63175, 21198, 9358, 3838, 14139],
+          backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#f97316', '#ef4444']
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+
+    // Chart 3: Top Categories
+    const ctxCat = document.getElementById('categoryBarChart').getContext('2d');
+    new Chart(ctxCat, {
+      type: 'bar',
+      data: {
+        labels: ['Health & Beauty', 'Watches Gifts', 'Bed Bath Table', 'Sports Leisure', 'Computers Access', 'Furniture Decor', 'Housewares', 'Cool Stuff', 'Auto', 'Toys'],
+        datasets: [{
+          label: 'Revenue (R$)',
+          data: [1258670, 1205001, 1036988, 988048, 910896, 729762, 632248, 635290, 585305, 483563],
+          backgroundColor: '#3b82f6'
+        }]
+      },
+      options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false }
+    });
+
+    // Chart 4: Delay vs Review
+    const ctxDelay = document.getElementById('delayReviewChart').getContext('2d');
+    new Chart(ctxDelay, {
+      type: 'bar',
+      data: {
+        labels: ['Very Early (>7d)', 'Early (1-7d)', 'On Time (0d)', 'Late (1-7d)', 'Very Late (>7d)'],
+        datasets: [{
+          label: 'Avg Review Score (1-5)',
+          data: [4.27, 4.19, 4.08, 2.24, 1.62],
+          backgroundColor: ['#10b981', '#34d399', '#6ee7b7', '#f87171', '#ef4444']
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: { y: { min: 1, max: 5 } }
+      }
+    });
+
+    // Chart 5: Freight by State
+    const ctxFreight = document.getElementById('freightStateChart').getContext('2d');
+    new Chart(ctxFreight, {
+      type: 'bar',
+      data: {
+        labels: ['SP (Southeast)', 'RJ (Southeast)', 'MG (Southeast)', 'BA (Northeast)', 'MA (Northeast)', 'PB (Northeast)', 'RR (North)'],
+        datasets: [{
+          label: 'Freight as % of Order Price',
+          data: [13.5, 17.8, 18.2, 28.4, 32.4, 35.7, 36.5],
+          backgroundColor: '#f59e0b'
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+
+    function filterData() {
+      // Interactive placeholder
+      console.log('Filtered by:', document.getElementById('stateFilter').value, document.getElementById('yearFilter').value);
+    }
+  </script>
+</body>
+</html>

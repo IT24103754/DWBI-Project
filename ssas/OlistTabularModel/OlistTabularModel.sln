@@ -1,0 +1,19 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{D2ABAB84-BF74-430A-B69E-9DC6D40DDA17}") = "OlistTabularModel", "OlistTabularModel.smproj", "{4B94C74F-7DE7-4EA3-8D19-2E3BC4A49B71}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Development|Default = Development|Default
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4B94C74F-7DE7-4EA3-8D19-2E3BC4A49B71}.Development|Default.ActiveCfg = Development
+		{4B94C74F-7DE7-4EA3-8D19-2E3BC4A49B71}.Development|Default.Build.0 = Development
+		{4B94C74F-7DE7-4EA3-8D19-2E3BC4A49B71}.Development|Default.Deploy.0 = Development
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

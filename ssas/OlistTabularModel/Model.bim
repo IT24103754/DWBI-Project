@@ -1,0 +1,272 @@
+{
+  "name": "OlistTabularModel",
+  "compatibilityLevel": 1600,
+  "model": {
+    "culture": "en-US",
+    "dataSources": [
+      {
+        "type": "structured",
+        "name": "OlistDW",
+        "connectionDetails": {
+          "protocol": "tds",
+          "address": {
+            "server": "localhost",
+            "database": "OlistDW"
+          }
+        },
+        "credential": {
+          "AuthenticationKind": "Windows"
+        }
+      }
+    ],
+    "tables": [
+      {
+        "name": "fact_order_items",
+        "columns": [
+          { "name": "order_item_key",      "dataType": "int64",   "sourceColumn": "order_item_key" },
+          { "name": "order_id",            "dataType": "string",  "sourceColumn": "order_id" },
+          { "name": "order_item_id",       "dataType": "int64",   "sourceColumn": "order_item_id" },
+          { "name": "customer_key",        "dataType": "int64",   "sourceColumn": "customer_key" },
+          { "name": "product_key",         "dataType": "int64",   "sourceColumn": "product_key" },
+          { "name": "seller_key",          "dataType": "int64",   "sourceColumn": "seller_key" },
+          { "name": "date_key",            "dataType": "int64",   "sourceColumn": "date_key" },
+          { "name": "geo_key",             "dataType": "int64",   "sourceColumn": "geo_key" },
+          { "name": "price_brl",           "dataType": "decimal", "sourceColumn": "price_brl",     "formatString": "\\$#,0.00" },
+          { "name": "price_usd",           "dataType": "decimal", "sourceColumn": "price_usd",     "formatString": "\\$#,0.00" },
+          { "name": "freight_value",       "dataType": "decimal", "sourceColumn": "freight_value", "formatString": "#,0.00" },
+          { "name": "review_score",        "dataType": "int64",   "sourceColumn": "review_score" },
+          { "name": "delivery_delay_days", "dataType": "int64",   "sourceColumn": "delivery_delay_days" },
+          { "name": "order_status",        "dataType": "string",  "sourceColumn": "order_status" },
+          { "name": "payment_type",        "dataType": "string",  "sourceColumn": "payment_type" },
+          { "name": "payment_value",       "dataType": "decimal", "sourceColumn": "payment_value" }
+        ],
+        "partitions": [
+          {
+            "name": "fact_order_items-partition",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = OlistDW,\n    dw_fact_order_items = Source{[Schema=\"dw\",Item=\"fact_order_items\"]}[Data]\nin\n    dw_fact_order_items"
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": "Total Revenue BRL",
+            "expression": "SUM(fact_order_items[price_brl])",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": "Total Revenue USD",
+            "expression": "SUM(fact_order_items[price_usd])",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": "Total Freight BRL",
+            "expression": "SUM(fact_order_items[freight_value])",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": "Order Count",
+            "expression": "DISTINCTCOUNT(fact_order_items[order_id])",
+            "formatString": "#,0"
+          },
+          {
+            "name": "Order Item Count",
+            "expression": "COUNTROWS(fact_order_items)",
+            "formatString": "#,0"
+          },
+          {
+            "name": "Avg Order Value BRL",
+            "expression": "AVERAGEX(VALUES(fact_order_items[order_id]), CALCULATE(SUM(fact_order_items[price_brl])))",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": "Avg Delivery Delay Days",
+            "expression": "AVERAGE(fact_order_items[delivery_delay_days])",
+            "formatString": "#,0.0"
+          },
+          {
+            "name": "Late Delivery Count",
+            "expression": "CALCULATE(COUNTROWS(fact_order_items), fact_order_items[delivery_delay_days] > 0)",
+            "formatString": "#,0"
+          },
+          {
+            "name": "On Time Delivery Count",
+            "expression": "CALCULATE(COUNTROWS(fact_order_items), fact_order_items[delivery_delay_days] <= 0)",
+            "formatString": "#,0"
+          },
+          {
+            "name": "Late Delivery %",
+            "expression": "DIVIDE([Late Delivery Count], [Order Item Count], 0) * 100",
+            "formatString": "0.00%"
+          },
+          {
+            "name": "Avg Review Score",
+            "expression": "AVERAGE(fact_order_items[review_score])",
+            "formatString": "0.00"
+          },
+          {
+            "name": "5-Star Count",
+            "expression": "CALCULATE(COUNTROWS(fact_order_items), fact_order_items[review_score] = 5)",
+            "formatString": "#,0"
+          },
+          {
+            "name": "1-Star Count",
+            "expression": "CALCULATE(COUNTROWS(fact_order_items), fact_order_items[review_score] = 1)",
+            "formatString": "#,0"
+          },
+          {
+            "name": "Avg Freight BRL",
+            "expression": "AVERAGE(fact_order_items[freight_value])",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": "Freight as % of Revenue",
+            "expression": "DIVIDE([Total Freight BRL], [Total Revenue BRL], 0) * 100",
+            "formatString": "0.00%"
+          },
+          {
+            "name": "YTD Revenue BRL",
+            "expression": "CALCULATE([Total Revenue BRL], DATESYTD(dim_date[full_date]))",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": "Revenue MoM % Change",
+            "expression": "VAR cur = [Total Revenue BRL]\nVAR prev = CALCULATE([Total Revenue BRL], PREVIOUSMONTH(dim_date[full_date]))\nRETURN DIVIDE(cur - prev, prev, BLANK()) * 100",
+            "formatString": "0.00%"
+          }
+        ]
+      },
+      {
+        "name": "dim_customer",
+        "columns": [
+          { "name": "customer_key", "dataType": "int64",  "sourceColumn": "customer_key", "isHidden": true },
+          { "name": "customer_id",  "dataType": "string", "sourceColumn": "customer_id",  "isHidden": true },
+          { "name": "city",         "dataType": "string", "sourceColumn": "city" },
+          { "name": "state",        "dataType": "string", "sourceColumn": "state" },
+          { "name": "zip_prefix",   "dataType": "string", "sourceColumn": "zip_prefix" }
+        ],
+        "partitions": [
+          {
+            "name": "dim_customer-partition",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = OlistDW,\n    dw_dim_customer = Source{[Schema=\"dw\",Item=\"dim_customer\"]}[Data]\nin\n    dw_dim_customer"
+            }
+          }
+        ]
+      },
+      {
+        "name": "dim_product",
+        "columns": [
+          { "name": "product_key",  "dataType": "int64",  "sourceColumn": "product_key",  "isHidden": true },
+          { "name": "product_id",   "dataType": "string", "sourceColumn": "product_id",   "isHidden": true },
+          { "name": "category_pt",  "dataType": "string", "sourceColumn": "category_pt" },
+          { "name": "category_en",  "dataType": "string", "sourceColumn": "category_en" },
+          { "name": "weight_g",     "dataType": "int64",  "sourceColumn": "weight_g" },
+          { "name": "length_cm",    "dataType": "int64",  "sourceColumn": "length_cm" },
+          { "name": "height_cm",    "dataType": "int64",  "sourceColumn": "height_cm" },
+          { "name": "width_cm",     "dataType": "int64",  "sourceColumn": "width_cm" }
+        ],
+        "partitions": [
+          {
+            "name": "dim_product-partition",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = OlistDW,\n    dw_dim_product = Source{[Schema=\"dw\",Item=\"dim_product\"]}[Data]\nin\n    dw_dim_product"
+            }
+          }
+        ]
+      },
+      {
+        "name": "dim_seller",
+        "columns": [
+          { "name": "seller_key",  "dataType": "int64",  "sourceColumn": "seller_key",  "isHidden": true },
+          { "name": "seller_id",   "dataType": "string", "sourceColumn": "seller_id",   "isHidden": true },
+          { "name": "city",        "dataType": "string", "sourceColumn": "city" },
+          { "name": "state",       "dataType": "string", "sourceColumn": "state" },
+          { "name": "zip_prefix",  "dataType": "string", "sourceColumn": "zip_prefix" }
+        ],
+        "partitions": [
+          {
+            "name": "dim_seller-partition",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = OlistDW,\n    dw_dim_seller = Source{[Schema=\"dw\",Item=\"dim_seller\"]}[Data]\nin\n    dw_dim_seller"
+            }
+          }
+        ]
+      },
+      {
+        "name": "dim_date",
+        "columns": [
+          { "name": "date_key",     "dataType": "int64",  "sourceColumn": "date_key",     "isHidden": true },
+          { "name": "full_date",    "dataType": "dateTime","sourceColumn": "full_date" },
+          { "name": "day",          "dataType": "int64",  "sourceColumn": "day" },
+          { "name": "month",        "dataType": "int64",  "sourceColumn": "month" },
+          { "name": "month_name",   "dataType": "string", "sourceColumn": "month_name" },
+          { "name": "quarter",      "dataType": "int64",  "sourceColumn": "quarter" },
+          { "name": "year",         "dataType": "int64",  "sourceColumn": "year" },
+          { "name": "weekday_name", "dataType": "string", "sourceColumn": "weekday_name" },
+          { "name": "is_weekend",   "dataType": "boolean","sourceColumn": "is_weekend" }
+        ],
+        "hierarchies": [
+          {
+            "name": "Date Hierarchy",
+            "levels": [
+              { "name": "Year",    "ordinal": 0, "column": "year" },
+              { "name": "Quarter", "ordinal": 1, "column": "quarter" },
+              { "name": "Month",   "ordinal": 2, "column": "month_name" },
+              { "name": "Day",     "ordinal": 3, "column": "full_date" }
+            ]
+          }
+        ],
+        "partitions": [
+          {
+            "name": "dim_date-partition",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = OlistDW,\n    dw_dim_date = Source{[Schema=\"dw\",Item=\"dim_date\"]}[Data]\nin\n    dw_dim_date"
+            }
+          }
+        ]
+      },
+      {
+        "name": "dim_geography",
+        "columns": [
+          { "name": "geo_key",    "dataType": "int64",  "sourceColumn": "geo_key",    "isHidden": true },
+          { "name": "zip_prefix", "dataType": "string", "sourceColumn": "zip_prefix", "isHidden": true },
+          { "name": "lat",        "dataType": "double", "sourceColumn": "lat" },
+          { "name": "lng",        "dataType": "double", "sourceColumn": "lng" },
+          { "name": "city",       "dataType": "string", "sourceColumn": "city" },
+          { "name": "state",      "dataType": "string", "sourceColumn": "state" }
+        ],
+        "hierarchies": [
+          {
+            "name": "Location Hierarchy",
+            "levels": [
+              { "name": "State", "ordinal": 0, "column": "state" },
+              { "name": "City",  "ordinal": 1, "column": "city" }
+            ]
+          }
+        ],
+        "partitions": [
+          {
+            "name": "dim_geography-partition",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = OlistDW,\n    dw_dim_geography = Source{[Schema=\"dw\",Item=\"dim_geography\"]}[Data]\nin\n    dw_dim_geography"
+            }
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      { "name": "fact_customer", "fromTable": "fact_order_items", "fromColumn": "customer_key", "toTable": "dim_customer", "toColumn": "customer_key" },
+      { "name": "fact_product",  "fromTable": "fact_order_items", "fromColumn": "product_key",  "toTable": "dim_product",  "toColumn": "product_key" },
+      { "name": "fact_seller",   "fromTable": "fact_order_items", "fromColumn": "seller_key",   "toTable": "dim_seller",   "toColumn": "seller_key" },
+      { "name": "fact_date",     "fromTable": "fact_order_items", "fromColumn": "date_key",     "toTable": "dim_date",     "toColumn": "date_key" },
+      { "name": "fact_geo",      "fromTable": "fact_order_items", "fromColumn": "geo_key",      "toTable": "dim_geography","toColumn": "geo_key" }
+    ]
+  }
+}
