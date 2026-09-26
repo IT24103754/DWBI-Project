@@ -16,6 +16,9 @@ venv/
 # Temporary and local logs
 logs/
 *.log
+~$*
+*backup.pbix
+dwbi_project_extracted/
 
 # Operating System Files
 Thumbs.db
