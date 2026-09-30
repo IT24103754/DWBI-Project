@@ -1,10 +1,14 @@
-<?xml version="1.0"?>
+import subprocess
+import pyodbc
+
+# First, test if we can generate the exact DTSX with 3 Lookup transformations
+package_content = """<?xml version="1.0"?>
 <DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
   DTS:refId="Package"
   DTS:CreationDate="9/30/2026 8:52:16 AM"
   DTS:CreationName="Microsoft.Package"
   DTS:CreatorComputerName="ACER"
-  DTS:CreatorName="ACER\thuva"
+  DTS:CreatorName="ACER\\\\thuva"
   DTS:DTSID="{7DBD5534-B5B6-4FB3-97DC-E3AFFA12EBB3}"
   DTS:ExecutableType="Microsoft.Package"
   DTS:LastModifiedProductVersion="17.0.1016.0"
@@ -47,7 +51,7 @@
   <DTS:Executables>
     <!-- Task 0: Prepare_DW_Tables -->
     <DTS:Executable
-      DTS:refId="Package\Prepare_DW_Tables"
+      DTS:refId="Package\\\\Prepare_DW_Tables"
       DTS:CreationName="Microsoft.ExecuteSQLTask"
       DTS:DelayValidation="True"
       DTS:Description="Cleans and resets Fact and Dimension tables for idempotent full refresh"
@@ -66,7 +70,7 @@
 
     <!-- Task 1: Load_Dim_Customer -->
     <DTS:Executable
-      DTS:refId="Package\Load_Dim_Customer"
+      DTS:refId="Package\\\\Load_Dim_Customer"
       DTS:CreationName="Microsoft.Pipeline"
       DTS:DelayValidation="True"
       DTS:Description="Data Flow Task - Extracts Customers from Olist_OLTP and loads Dim_Customer"
@@ -81,7 +85,7 @@
           version="1">
           <components>
             <component
-              refId="Package\Load_Dim_Customer\OLE DB Source"
+              refId="Package\\\\Load_Dim_Customer\\\\OLE DB Source"
               componentClassID="Microsoft.OLEDBSource"
               contactInfo="OLE DB Source;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;"
               description="Extracts unique customers from Olist_OLTP"
@@ -101,7 +105,7 @@
               </properties>
               <connections>
                 <connection
-                  refId="Package\Load_Dim_Customer\OLE DB Source.Connections[OleDbConnection]"
+                  refId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Connections[OleDbConnection]"
                   connectionManagerID="Package.ConnectionManagers[Olist_OLTP]"
                   connectionManagerRefId="Package.ConnectionManagers[Olist_OLTP]"
                   description="The OLE DB runtime connection used to access the database."
@@ -109,92 +113,92 @@
               </connections>
               <outputs>
                 <output
-                  refId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Output]"
+                  refId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Output]"
                   name="OLE DB Source Output">
                   <outputColumns>
                     <outputColumn
-                      refId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Output].Columns[customer_id]"
+                      refId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[customer_id]"
                       codePage="1252"
                       dataType="str"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[customer_id]"
+                      externalMetadataColumnId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[customer_id]"
                       length="50"
-                      lineageId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Output].Columns[customer_id]"
+                      lineageId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[customer_id]"
                       name="customer_id"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Output].Columns[customer_unique_id]"
+                      refId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[customer_unique_id]"
                       codePage="1252"
                       dataType="str"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[customer_unique_id]"
+                      externalMetadataColumnId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[customer_unique_id]"
                       length="50"
-                      lineageId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Output].Columns[customer_unique_id]"
+                      lineageId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[customer_unique_id]"
                       name="customer_unique_id"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Output].Columns[customer_zip_code_prefix]"
+                      refId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[customer_zip_code_prefix]"
                       codePage="1252"
                       dataType="str"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[customer_zip_code_prefix]"
+                      externalMetadataColumnId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[customer_zip_code_prefix]"
                       length="10"
-                      lineageId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Output].Columns[customer_zip_code_prefix]"
+                      lineageId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[customer_zip_code_prefix]"
                       name="customer_zip_code_prefix"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Output].Columns[customer_city]"
+                      refId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[customer_city]"
                       codePage="1252"
                       dataType="str"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[customer_city]"
+                      externalMetadataColumnId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[customer_city]"
                       length="100"
-                      lineageId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Output].Columns[customer_city]"
+                      lineageId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[customer_city]"
                       name="customer_city"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Output].Columns[customer_state]"
+                      refId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[customer_state]"
                       codePage="1252"
                       dataType="str"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[customer_state]"
+                      externalMetadataColumnId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[customer_state]"
                       length="5"
-                      lineageId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Output].Columns[customer_state]"
+                      lineageId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[customer_state]"
                       name="customer_state"
                       truncationRowDisposition="FailComponent" />
                   </outputColumns>
                   <externalMetadataColumns isUsed="True">
                     <externalMetadataColumn
-                      refId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[customer_id]"
+                      refId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[customer_id]"
                       codePage="1252"
                       dataType="str"
                       length="50"
                       name="customer_id" />
                     <externalMetadataColumn
-                      refId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[customer_unique_id]"
+                      refId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[customer_unique_id]"
                       codePage="1252"
                       dataType="str"
                       length="50"
                       name="customer_unique_id" />
                     <externalMetadataColumn
-                      refId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[customer_zip_code_prefix]"
+                      refId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[customer_zip_code_prefix]"
                       codePage="1252"
                       dataType="str"
                       length="10"
                       name="customer_zip_code_prefix" />
                     <externalMetadataColumn
-                      refId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[customer_city]"
+                      refId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[customer_city]"
                       codePage="1252"
                       dataType="str"
                       length="100"
                       name="customer_city" />
                     <externalMetadataColumn
-                      refId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[customer_state]"
+                      refId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[customer_state]"
                       codePage="1252"
                       dataType="str"
                       length="5"
@@ -202,55 +206,55 @@
                   </externalMetadataColumns>
                 </output>
                 <output
-                  refId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Error Output]"
+                  refId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Error Output]"
                   isErrorOut="true"
                   name="OLE DB Source Error Output">
                   <outputColumns>
                     <outputColumn
-                      refId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[customer_id]"
+                      refId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[customer_id]"
                       codePage="1252"
                       dataType="str"
                       length="50"
-                      lineageId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[customer_id]"
+                      lineageId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[customer_id]"
                       name="customer_id" />
                     <outputColumn
-                      refId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[customer_unique_id]"
+                      refId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[customer_unique_id]"
                       codePage="1252"
                       dataType="str"
                       length="50"
-                      lineageId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[customer_unique_id]"
+                      lineageId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[customer_unique_id]"
                       name="customer_unique_id" />
                     <outputColumn
-                      refId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[customer_zip_code_prefix]"
+                      refId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[customer_zip_code_prefix]"
                       codePage="1252"
                       dataType="str"
                       length="10"
-                      lineageId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[customer_zip_code_prefix]"
+                      lineageId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[customer_zip_code_prefix]"
                       name="customer_zip_code_prefix" />
                     <outputColumn
-                      refId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[customer_city]"
+                      refId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[customer_city]"
                       codePage="1252"
                       dataType="str"
                       length="100"
-                      lineageId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[customer_city]"
+                      lineageId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[customer_city]"
                       name="customer_city" />
                     <outputColumn
-                      refId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[customer_state]"
+                      refId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[customer_state]"
                       codePage="1252"
                       dataType="str"
                       length="5"
-                      lineageId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[customer_state]"
+                      lineageId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[customer_state]"
                       name="customer_state" />
                     <outputColumn
-                      refId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                      refId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
                       dataType="i4"
-                      lineageId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                      lineageId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
                       name="ErrorCode"
                       specialFlags="1" />
                     <outputColumn
-                      refId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                      refId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
                       dataType="i4"
-                      lineageId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                      lineageId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
                       name="ErrorColumn"
                       specialFlags="2" />
                   </outputColumns>
@@ -259,7 +263,7 @@
               </outputs>
             </component>
             <component
-              refId="Package\Load_Dim_Customer\OLE DB Destination"
+              refId="Package\\\\Load_Dim_Customer\\\\OLE DB Destination"
               componentClassID="Microsoft.OLEDBDestination"
               contactInfo="OLE DB Destination;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;"
               description="Loads Dim_Customer in Olist_DW"
@@ -281,7 +285,7 @@
               </properties>
               <connections>
                 <connection
-                  refId="Package\Load_Dim_Customer\OLE DB Destination.Connections[OleDbConnection]"
+                  refId="Package\\\\Load_Dim_Customer\\\\OLE DB Destination.Connections[OleDbConnection]"
                   connectionManagerID="Package.ConnectionManagers[Olist_DW]"
                   connectionManagerRefId="Package.ConnectionManagers[Olist_DW]"
                   description="The OLE DB runtime connection used to access the database."
@@ -289,80 +293,80 @@
               </connections>
               <inputs>
                 <input
-                  refId="Package\Load_Dim_Customer\OLE DB Destination.Inputs[OLE DB Destination Input]"
+                  refId="Package\\\\Load_Dim_Customer\\\\OLE DB Destination.Inputs[OLE DB Destination Input]"
                   errorOrTruncationOperation="Insert"
                   errorRowDisposition="FailComponent"
                   hasSideEffects="true"
                   name="OLE DB Destination Input">
                   <inputColumns>
                     <inputColumn
-                      refId="Package\Load_Dim_Customer\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[customer_id]"
+                      refId="Package\\\\Load_Dim_Customer\\\\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[customer_id]"
                       cachedCodepage="1252"
                       cachedDataType="str"
                       cachedLength="50"
                       cachedName="customer_id"
-                      externalMetadataColumnId="Package\Load_Dim_Customer\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CustomerBK]"
-                      lineageId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Output].Columns[customer_id]" />
+                      externalMetadataColumnId="Package\\\\Load_Dim_Customer\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CustomerBK]"
+                      lineageId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[customer_id]" />
                     <inputColumn
-                      refId="Package\Load_Dim_Customer\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[customer_unique_id]"
+                      refId="Package\\\\Load_Dim_Customer\\\\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[customer_unique_id]"
                       cachedCodepage="1252"
                       cachedDataType="str"
                       cachedLength="50"
                       cachedName="customer_unique_id"
-                      externalMetadataColumnId="Package\Load_Dim_Customer\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CustomerUniqueId]"
-                      lineageId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Output].Columns[customer_unique_id]" />
+                      externalMetadataColumnId="Package\\\\Load_Dim_Customer\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CustomerUniqueId]"
+                      lineageId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[customer_unique_id]" />
                     <inputColumn
-                      refId="Package\Load_Dim_Customer\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[customer_zip_code_prefix]"
+                      refId="Package\\\\Load_Dim_Customer\\\\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[customer_zip_code_prefix]"
                       cachedCodepage="1252"
                       cachedDataType="str"
                       cachedLength="10"
                       cachedName="customer_zip_code_prefix"
-                      externalMetadataColumnId="Package\Load_Dim_Customer\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CustomerZipCode]"
-                      lineageId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Output].Columns[customer_zip_code_prefix]" />
+                      externalMetadataColumnId="Package\\\\Load_Dim_Customer\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CustomerZipCode]"
+                      lineageId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[customer_zip_code_prefix]" />
                     <inputColumn
-                      refId="Package\Load_Dim_Customer\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[customer_city]"
+                      refId="Package\\\\Load_Dim_Customer\\\\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[customer_city]"
                       cachedCodepage="1252"
                       cachedDataType="str"
                       cachedLength="100"
                       cachedName="customer_city"
-                      externalMetadataColumnId="Package\Load_Dim_Customer\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CustomerCity]"
-                      lineageId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Output].Columns[customer_city]" />
+                      externalMetadataColumnId="Package\\\\Load_Dim_Customer\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CustomerCity]"
+                      lineageId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[customer_city]" />
                     <inputColumn
-                      refId="Package\Load_Dim_Customer\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[customer_state]"
+                      refId="Package\\\\Load_Dim_Customer\\\\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[customer_state]"
                       cachedCodepage="1252"
                       cachedDataType="str"
                       cachedLength="5"
                       cachedName="customer_state"
-                      externalMetadataColumnId="Package\Load_Dim_Customer\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CustomerState]"
-                      lineageId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Output].Columns[customer_state]" />
+                      externalMetadataColumnId="Package\\\\Load_Dim_Customer\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CustomerState]"
+                      lineageId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[customer_state]" />
                   </inputColumns>
                   <externalMetadataColumns isUsed="True">
                     <externalMetadataColumn
-                      refId="Package\Load_Dim_Customer\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CustomerBK]"
+                      refId="Package\\\\Load_Dim_Customer\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CustomerBK]"
                       codePage="1252"
                       dataType="str"
                       length="64"
                       name="CustomerBK" />
                     <externalMetadataColumn
-                      refId="Package\Load_Dim_Customer\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CustomerUniqueId]"
+                      refId="Package\\\\Load_Dim_Customer\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CustomerUniqueId]"
                       codePage="1252"
                       dataType="str"
                       length="64"
                       name="CustomerUniqueId" />
                     <externalMetadataColumn
-                      refId="Package\Load_Dim_Customer\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CustomerZipCode]"
+                      refId="Package\\\\Load_Dim_Customer\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CustomerZipCode]"
                       codePage="1252"
                       dataType="str"
                       length="16"
                       name="CustomerZipCode" />
                     <externalMetadataColumn
-                      refId="Package\Load_Dim_Customer\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CustomerCity]"
+                      refId="Package\\\\Load_Dim_Customer\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CustomerCity]"
                       codePage="1252"
                       dataType="str"
                       length="64"
                       name="CustomerCity" />
                     <externalMetadataColumn
-                      refId="Package\Load_Dim_Customer\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CustomerState]"
+                      refId="Package\\\\Load_Dim_Customer\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CustomerState]"
                       codePage="1252"
                       dataType="str"
                       length="16"
@@ -372,22 +376,22 @@
               </inputs>
               <outputs>
                 <output
-                  refId="Package\Load_Dim_Customer\OLE DB Destination.Outputs[OLE DB Destination Error Output]"
+                  refId="Package\\\\Load_Dim_Customer\\\\OLE DB Destination.Outputs[OLE DB Destination Error Output]"
                   exclusionGroup="1"
                   isErrorOut="true"
                   name="OLE DB Destination Error Output"
-                  synchronousInputId="Package\Load_Dim_Customer\OLE DB Destination.Inputs[OLE DB Destination Input]">
+                  synchronousInputId="Package\\\\Load_Dim_Customer\\\\OLE DB Destination.Inputs[OLE DB Destination Input]">
                   <outputColumns>
                     <outputColumn
-                      refId="Package\Load_Dim_Customer\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                      refId="Package\\\\Load_Dim_Customer\\\\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
                       dataType="i4"
-                      lineageId="Package\Load_Dim_Customer\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                      lineageId="Package\\\\Load_Dim_Customer\\\\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
                       name="ErrorCode"
                       specialFlags="1" />
                     <outputColumn
-                      refId="Package\Load_Dim_Customer\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                      refId="Package\\\\Load_Dim_Customer\\\\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
                       dataType="i4"
-                      lineageId="Package\Load_Dim_Customer\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                      lineageId="Package\\\\Load_Dim_Customer\\\\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
                       name="ErrorColumn"
                       specialFlags="2" />
                   </outputColumns>
@@ -398,10 +402,10 @@
           </components>
           <paths>
             <path
-              refId="Package\Load_Dim_Customer.Paths[OLE DB Source Output]"
-              endId="Package\Load_Dim_Customer\OLE DB Destination.Inputs[OLE DB Destination Input]"
+              refId="Package\\\\Load_Dim_Customer.Paths[OLE DB Source Output]"
+              endId="Package\\\\Load_Dim_Customer\\\\OLE DB Destination.Inputs[OLE DB Destination Input]"
               name="OLE DB Source Output"
-              startId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Output]" />
+              startId="Package\\\\Load_Dim_Customer\\\\OLE DB Source.Outputs[OLE DB Source Output]" />
           </paths>
         </pipeline>
       </DTS:ObjectData>
@@ -409,7 +413,7 @@
 
     <!-- Task 2: Load_Dim_Product -->
     <DTS:Executable
-      DTS:refId="Package\Load_Dim_Product"
+      DTS:refId="Package\\\\Load_Dim_Product"
       DTS:CreationName="Microsoft.Pipeline"
       DTS:DelayValidation="True"
       DTS:Description="Data Flow Task - Extracts Products with English Category translations"
@@ -424,7 +428,7 @@
           version="1">
           <components>
             <component
-              refId="Package\Load_Dim_Product\OLE DB Source"
+              refId="Package\\\\Load_Dim_Product\\\\OLE DB Source"
               componentClassID="Microsoft.OLEDBSource"
               contactInfo="OLE DB Source;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;"
               description="Extracts products and category translation from Olist_OLTP"
@@ -444,7 +448,7 @@
               </properties>
               <connections>
                 <connection
-                  refId="Package\Load_Dim_Product\OLE DB Source.Connections[OleDbConnection]"
+                  refId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Connections[OleDbConnection]"
                   connectionManagerID="Package.ConnectionManagers[Olist_OLTP]"
                   connectionManagerRefId="Package.ConnectionManagers[Olist_OLTP]"
                   description="The OLE DB runtime connection used to access the database."
@@ -452,148 +456,148 @@
               </connections>
               <outputs>
                 <output
-                  refId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Output]"
+                  refId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Output]"
                   name="OLE DB Source Output">
                   <outputColumns>
                     <outputColumn
-                      refId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_id]"
+                      refId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_id]"
                       codePage="1252"
                       dataType="str"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[product_id]"
+                      externalMetadataColumnId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[product_id]"
                       length="50"
-                      lineageId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_id]"
+                      lineageId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_id]"
                       name="product_id"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_category_name]"
+                      refId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_category_name]"
                       codePage="1252"
                       dataType="str"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[product_category_name]"
+                      externalMetadataColumnId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[product_category_name]"
                       length="100"
-                      lineageId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_category_name]"
+                      lineageId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_category_name]"
                       name="product_category_name"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_weight_g]"
+                      refId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_weight_g]"
                       dataType="i4"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[product_weight_g]"
-                      lineageId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_weight_g]"
+                      externalMetadataColumnId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[product_weight_g]"
+                      lineageId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_weight_g]"
                       name="product_weight_g"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_length_cm]"
+                      refId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_length_cm]"
                       dataType="i4"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[product_length_cm]"
-                      lineageId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_length_cm]"
+                      externalMetadataColumnId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[product_length_cm]"
+                      lineageId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_length_cm]"
                       name="product_length_cm"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_height_cm]"
+                      refId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_height_cm]"
                       dataType="i4"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[product_height_cm]"
-                      lineageId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_height_cm]"
+                      externalMetadataColumnId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[product_height_cm]"
+                      lineageId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_height_cm]"
                       name="product_height_cm"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_width_cm]"
+                      refId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_width_cm]"
                       dataType="i4"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[product_width_cm]"
-                      lineageId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_width_cm]"
+                      externalMetadataColumnId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[product_width_cm]"
+                      lineageId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_width_cm]"
                       name="product_width_cm"
                       truncationRowDisposition="FailComponent" />
                   </outputColumns>
                   <externalMetadataColumns isUsed="True">
                     <externalMetadataColumn
-                      refId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[product_id]"
+                      refId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[product_id]"
                       codePage="1252"
                       dataType="str"
                       length="50"
                       name="product_id" />
                     <externalMetadataColumn
-                      refId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[product_category_name]"
+                      refId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[product_category_name]"
                       codePage="1252"
                       dataType="str"
                       length="100"
                       name="product_category_name" />
                     <externalMetadataColumn
-                      refId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[product_weight_g]"
+                      refId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[product_weight_g]"
                       dataType="i4"
                       name="product_weight_g" />
                     <externalMetadataColumn
-                      refId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[product_length_cm]"
+                      refId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[product_length_cm]"
                       dataType="i4"
                       name="product_length_cm" />
                     <externalMetadataColumn
-                      refId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[product_height_cm]"
+                      refId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[product_height_cm]"
                       dataType="i4"
                       name="product_height_cm" />
                     <externalMetadataColumn
-                      refId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[product_width_cm]"
+                      refId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[product_width_cm]"
                       dataType="i4"
                       name="product_width_cm" />
                   </externalMetadataColumns>
                 </output>
                 <output
-                  refId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Error Output]"
+                  refId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Error Output]"
                   isErrorOut="true"
                   name="OLE DB Source Error Output">
                   <outputColumns>
                     <outputColumn
-                      refId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[product_id]"
+                      refId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[product_id]"
                       codePage="1252"
                       dataType="str"
                       length="50"
-                      lineageId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[product_id]"
+                      lineageId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[product_id]"
                       name="product_id" />
                     <outputColumn
-                      refId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[product_category_name]"
+                      refId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[product_category_name]"
                       codePage="1252"
                       dataType="str"
                       length="100"
-                      lineageId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[product_category_name]"
+                      lineageId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[product_category_name]"
                       name="product_category_name" />
                     <outputColumn
-                      refId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[product_weight_g]"
+                      refId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[product_weight_g]"
                       dataType="i4"
-                      lineageId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[product_weight_g]"
+                      lineageId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[product_weight_g]"
                       name="product_weight_g" />
                     <outputColumn
-                      refId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[product_length_cm]"
+                      refId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[product_length_cm]"
                       dataType="i4"
-                      lineageId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[product_length_cm]"
+                      lineageId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[product_length_cm]"
                       name="product_length_cm" />
                     <outputColumn
-                      refId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[product_height_cm]"
+                      refId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[product_height_cm]"
                       dataType="i4"
-                      lineageId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[product_height_cm]"
+                      lineageId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[product_height_cm]"
                       name="product_height_cm" />
                     <outputColumn
-                      refId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[product_width_cm]"
+                      refId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[product_width_cm]"
                       dataType="i4"
-                      lineageId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[product_width_cm]"
+                      lineageId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[product_width_cm]"
                       name="product_width_cm" />
                     <outputColumn
-                      refId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                      refId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
                       dataType="i4"
-                      lineageId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                      lineageId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
                       name="ErrorCode"
                       specialFlags="1" />
                     <outputColumn
-                      refId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                      refId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
                       dataType="i4"
-                      lineageId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                      lineageId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
                       name="ErrorColumn"
                       specialFlags="2" />
                   </outputColumns>
@@ -602,7 +606,7 @@
               </outputs>
             </component>
             <component
-              refId="Package\Load_Dim_Product\OLE DB Destination"
+              refId="Package\\\\Load_Dim_Product\\\\OLE DB Destination"
               componentClassID="Microsoft.OLEDBDestination"
               contactInfo="OLE DB Destination;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;"
               description="Loads Dim_Product in Olist_DW"
@@ -624,7 +628,7 @@
               </properties>
               <connections>
                 <connection
-                  refId="Package\Load_Dim_Product\OLE DB Destination.Connections[OleDbConnection]"
+                  refId="Package\\\\Load_Dim_Product\\\\OLE DB Destination.Connections[OleDbConnection]"
                   connectionManagerID="Package.ConnectionManagers[Olist_DW]"
                   connectionManagerRefId="Package.ConnectionManagers[Olist_DW]"
                   description="The OLE DB runtime connection used to access the database."
@@ -632,80 +636,80 @@
               </connections>
               <inputs>
                 <input
-                  refId="Package\Load_Dim_Product\OLE DB Destination.Inputs[OLE DB Destination Input]"
+                  refId="Package\\\\Load_Dim_Product\\\\OLE DB Destination.Inputs[OLE DB Destination Input]"
                   errorOrTruncationOperation="Insert"
                   errorRowDisposition="FailComponent"
                   hasSideEffects="true"
                   name="OLE DB Destination Input">
                   <inputColumns>
                     <inputColumn
-                      refId="Package\Load_Dim_Product\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[product_id]"
+                      refId="Package\\\\Load_Dim_Product\\\\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[product_id]"
                       cachedCodepage="1252"
                       cachedDataType="str"
                       cachedLength="50"
                       cachedName="product_id"
-                      externalMetadataColumnId="Package\Load_Dim_Product\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ProductBK]"
-                      lineageId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_id]" />
+                      externalMetadataColumnId="Package\\\\Load_Dim_Product\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ProductBK]"
+                      lineageId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_id]" />
                     <inputColumn
-                      refId="Package\Load_Dim_Product\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[product_category_name]"
+                      refId="Package\\\\Load_Dim_Product\\\\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[product_category_name]"
                       cachedCodepage="1252"
                       cachedDataType="str"
                       cachedLength="100"
                       cachedName="product_category_name"
-                      externalMetadataColumnId="Package\Load_Dim_Product\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CategoryNameEnglish]"
-                      lineageId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_category_name]" />
+                      externalMetadataColumnId="Package\\\\Load_Dim_Product\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CategoryNameEnglish]"
+                      lineageId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_category_name]" />
                     <inputColumn
-                      refId="Package\Load_Dim_Product\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[product_weight_g]"
+                      refId="Package\\\\Load_Dim_Product\\\\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[product_weight_g]"
                       cachedDataType="i4"
                       cachedName="product_weight_g"
-                      externalMetadataColumnId="Package\Load_Dim_Product\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ProductWeightGrams]"
-                      lineageId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_weight_g]" />
+                      externalMetadataColumnId="Package\\\\Load_Dim_Product\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ProductWeightGrams]"
+                      lineageId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_weight_g]" />
                     <inputColumn
-                      refId="Package\Load_Dim_Product\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[product_length_cm]"
+                      refId="Package\\\\Load_Dim_Product\\\\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[product_length_cm]"
                       cachedDataType="i4"
                       cachedName="product_length_cm"
-                      externalMetadataColumnId="Package\Load_Dim_Product\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ProductLengthCm]"
-                      lineageId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_length_cm]" />
+                      externalMetadataColumnId="Package\\\\Load_Dim_Product\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ProductLengthCm]"
+                      lineageId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_length_cm]" />
                     <inputColumn
-                      refId="Package\Load_Dim_Product\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[product_height_cm]"
+                      refId="Package\\\\Load_Dim_Product\\\\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[product_height_cm]"
                       cachedDataType="i4"
                       cachedName="product_height_cm"
-                      externalMetadataColumnId="Package\Load_Dim_Product\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ProductHeightCm]"
-                      lineageId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_height_cm]" />
+                      externalMetadataColumnId="Package\\\\Load_Dim_Product\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ProductHeightCm]"
+                      lineageId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_height_cm]" />
                     <inputColumn
-                      refId="Package\Load_Dim_Product\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[product_width_cm]"
+                      refId="Package\\\\Load_Dim_Product\\\\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[product_width_cm]"
                       cachedDataType="i4"
                       cachedName="product_width_cm"
-                      externalMetadataColumnId="Package\Load_Dim_Product\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ProductWidthCm]"
-                      lineageId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_width_cm]" />
+                      externalMetadataColumnId="Package\\\\Load_Dim_Product\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ProductWidthCm]"
+                      lineageId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_width_cm]" />
                   </inputColumns>
                   <externalMetadataColumns isUsed="True">
                     <externalMetadataColumn
-                      refId="Package\Load_Dim_Product\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ProductBK]"
+                      refId="Package\\\\Load_Dim_Product\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ProductBK]"
                       codePage="1252"
                       dataType="str"
                       length="64"
                       name="ProductBK" />
                     <externalMetadataColumn
-                      refId="Package\Load_Dim_Product\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CategoryNameEnglish]"
+                      refId="Package\\\\Load_Dim_Product\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CategoryNameEnglish]"
                       codePage="1252"
                       dataType="str"
                       length="64"
                       name="CategoryNameEnglish" />
                     <externalMetadataColumn
-                      refId="Package\Load_Dim_Product\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ProductWeightGrams]"
+                      refId="Package\\\\Load_Dim_Product\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ProductWeightGrams]"
                       dataType="i4"
                       name="ProductWeightGrams" />
                     <externalMetadataColumn
-                      refId="Package\Load_Dim_Product\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ProductLengthCm]"
+                      refId="Package\\\\Load_Dim_Product\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ProductLengthCm]"
                       dataType="i4"
                       name="ProductLengthCm" />
                     <externalMetadataColumn
-                      refId="Package\Load_Dim_Product\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ProductHeightCm]"
+                      refId="Package\\\\Load_Dim_Product\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ProductHeightCm]"
                       dataType="i4"
                       name="ProductHeightCm" />
                     <externalMetadataColumn
-                      refId="Package\Load_Dim_Product\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ProductWidthCm]"
+                      refId="Package\\\\Load_Dim_Product\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ProductWidthCm]"
                       dataType="i4"
                       name="ProductWidthCm" />
                   </externalMetadataColumns>
@@ -713,22 +717,22 @@
               </inputs>
               <outputs>
                 <output
-                  refId="Package\Load_Dim_Product\OLE DB Destination.Outputs[OLE DB Destination Error Output]"
+                  refId="Package\\\\Load_Dim_Product\\\\OLE DB Destination.Outputs[OLE DB Destination Error Output]"
                   exclusionGroup="1"
                   isErrorOut="true"
                   name="OLE DB Destination Error Output"
-                  synchronousInputId="Package\Load_Dim_Product\OLE DB Destination.Inputs[OLE DB Destination Input]">
+                  synchronousInputId="Package\\\\Load_Dim_Product\\\\OLE DB Destination.Inputs[OLE DB Destination Input]">
                   <outputColumns>
                     <outputColumn
-                      refId="Package\Load_Dim_Product\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                      refId="Package\\\\Load_Dim_Product\\\\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
                       dataType="i4"
-                      lineageId="Package\Load_Dim_Product\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                      lineageId="Package\\\\Load_Dim_Product\\\\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
                       name="ErrorCode"
                       specialFlags="1" />
                     <outputColumn
-                      refId="Package\Load_Dim_Product\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                      refId="Package\\\\Load_Dim_Product\\\\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
                       dataType="i4"
-                      lineageId="Package\Load_Dim_Product\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                      lineageId="Package\\\\Load_Dim_Product\\\\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
                       name="ErrorColumn"
                       specialFlags="2" />
                   </outputColumns>
@@ -739,10 +743,10 @@
           </components>
           <paths>
             <path
-              refId="Package\Load_Dim_Product.Paths[OLE DB Source Output]"
-              endId="Package\Load_Dim_Product\OLE DB Destination.Inputs[OLE DB Destination Input]"
+              refId="Package\\\\Load_Dim_Product.Paths[OLE DB Source Output]"
+              endId="Package\\\\Load_Dim_Product\\\\OLE DB Destination.Inputs[OLE DB Destination Input]"
               name="OLE DB Source Output"
-              startId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Output]" />
+              startId="Package\\\\Load_Dim_Product\\\\OLE DB Source.Outputs[OLE DB Source Output]" />
           </paths>
         </pipeline>
       </DTS:ObjectData>
@@ -750,7 +754,7 @@
 
     <!-- Task 3: Load_Dim_Seller -->
     <DTS:Executable
-      DTS:refId="Package\Load_Dim_Seller"
+      DTS:refId="Package\\\\Load_Dim_Seller"
       DTS:CreationName="Microsoft.Pipeline"
       DTS:DelayValidation="True"
       DTS:Description="Data Flow Task - Extracts Sellers from Olist_OLTP and loads Dim_Seller"
@@ -765,7 +769,7 @@
           version="1">
           <components>
             <component
-              refId="Package\Load_Dim_Seller\OLE DB Source"
+              refId="Package\\\\Load_Dim_Seller\\\\OLE DB Source"
               componentClassID="Microsoft.OLEDBSource"
               contactInfo="OLE DB Source;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;"
               description="Extracts marketplace sellers from Olist_OLTP"
@@ -785,7 +789,7 @@
               </properties>
               <connections>
                 <connection
-                  refId="Package\Load_Dim_Seller\OLE DB Source.Connections[OleDbConnection]"
+                  refId="Package\\\\Load_Dim_Seller\\\\OLE DB Source.Connections[OleDbConnection]"
                   connectionManagerID="Package.ConnectionManagers[Olist_OLTP]"
                   connectionManagerRefId="Package.ConnectionManagers[Olist_OLTP]"
                   description="The OLE DB runtime connection used to access the database."
@@ -793,75 +797,75 @@
               </connections>
               <outputs>
                 <output
-                  refId="Package\Load_Dim_Seller\OLE DB Source.Outputs[OLE DB Source Output]"
+                  refId="Package\\\\Load_Dim_Seller\\\\OLE DB Source.Outputs[OLE DB Source Output]"
                   name="OLE DB Source Output">
                   <outputColumns>
                     <outputColumn
-                      refId="Package\Load_Dim_Seller\OLE DB Source.Outputs[OLE DB Source Output].Columns[seller_id]"
+                      refId="Package\\\\Load_Dim_Seller\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[seller_id]"
                       codePage="1252"
                       dataType="str"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Load_Dim_Seller\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[seller_id]"
+                      externalMetadataColumnId="Package\\\\Load_Dim_Seller\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[seller_id]"
                       length="50"
-                      lineageId="Package\Load_Dim_Seller\OLE DB Source.Outputs[OLE DB Source Output].Columns[seller_id]"
+                      lineageId="Package\\\\Load_Dim_Seller\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[seller_id]"
                       name="seller_id"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Load_Dim_Seller\OLE DB Source.Outputs[OLE DB Source Output].Columns[seller_zip_code_prefix]"
+                      refId="Package\\\\Load_Dim_Seller\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[seller_zip_code_prefix]"
                       codePage="1252"
                       dataType="str"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Load_Dim_Seller\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[seller_zip_code_prefix]"
+                      externalMetadataColumnId="Package\\\\Load_Dim_Seller\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[seller_zip_code_prefix]"
                       length="10"
-                      lineageId="Package\Load_Dim_Seller\OLE DB Source.Outputs[OLE DB Source Output].Columns[seller_zip_code_prefix]"
+                      lineageId="Package\\\\Load_Dim_Seller\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[seller_zip_code_prefix]"
                       name="seller_zip_code_prefix"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Load_Dim_Seller\OLE DB Source.Outputs[OLE DB Source Output].Columns[seller_city]"
+                      refId="Package\\\\Load_Dim_Seller\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[seller_city]"
                       codePage="1252"
                       dataType="str"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Load_Dim_Seller\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[seller_city]"
+                      externalMetadataColumnId="Package\\\\Load_Dim_Seller\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[seller_city]"
                       length="100"
-                      lineageId="Package\Load_Dim_Seller\OLE DB Source.Outputs[OLE DB Source Output].Columns[seller_city]"
+                      lineageId="Package\\\\Load_Dim_Seller\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[seller_city]"
                       name="seller_city"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Load_Dim_Seller\OLE DB Source.Outputs[OLE DB Source Output].Columns[seller_state]"
+                      refId="Package\\\\Load_Dim_Seller\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[seller_state]"
                       codePage="1252"
                       dataType="str"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Load_Dim_Seller\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[seller_state]"
+                      externalMetadataColumnId="Package\\\\Load_Dim_Seller\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[seller_state]"
                       length="5"
-                      lineageId="Package\Load_Dim_Seller\OLE DB Source.Outputs[OLE DB Source Output].Columns[seller_state]"
+                      lineageId="Package\\\\Load_Dim_Seller\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[seller_state]"
                       name="seller_state"
                       truncationRowDisposition="FailComponent" />
                   </outputColumns>
                   <externalMetadataColumns isUsed="True">
                     <externalMetadataColumn
-                      refId="Package\Load_Dim_Seller\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[seller_id]"
+                      refId="Package\\\\Load_Dim_Seller\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[seller_id]"
                       codePage="1252"
                       dataType="str"
                       length="50"
                       name="seller_id" />
                     <externalMetadataColumn
-                      refId="Package\Load_Dim_Seller\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[seller_zip_code_prefix]"
+                      refId="Package\\\\Load_Dim_Seller\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[seller_zip_code_prefix]"
                       codePage="1252"
                       dataType="str"
                       length="10"
                       name="seller_zip_code_prefix" />
                     <externalMetadataColumn
-                      refId="Package\Load_Dim_Seller\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[seller_city]"
+                      refId="Package\\\\Load_Dim_Seller\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[seller_city]"
                       codePage="1252"
                       dataType="str"
                       length="100"
                       name="seller_city" />
                     <externalMetadataColumn
-                      refId="Package\Load_Dim_Seller\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[seller_state]"
+                      refId="Package\\\\Load_Dim_Seller\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[seller_state]"
                       codePage="1252"
                       dataType="str"
                       length="5"
@@ -869,48 +873,48 @@
                   </externalMetadataColumns>
                 </output>
                 <output
-                  refId="Package\Load_Dim_Seller\OLE DB Source.Outputs[OLE DB Source Error Output]"
+                  refId="Package\\\\Load_Dim_Seller\\\\OLE DB Source.Outputs[OLE DB Source Error Output]"
                   isErrorOut="true"
                   name="OLE DB Source Error Output">
                   <outputColumns>
                     <outputColumn
-                      refId="Package\Load_Dim_Seller\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[seller_id]"
+                      refId="Package\\\\Load_Dim_Seller\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[seller_id]"
                       codePage="1252"
                       dataType="str"
                       length="50"
-                      lineageId="Package\Load_Dim_Seller\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[seller_id]"
+                      lineageId="Package\\\\Load_Dim_Seller\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[seller_id]"
                       name="seller_id" />
                     <outputColumn
-                      refId="Package\Load_Dim_Seller\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[seller_zip_code_prefix]"
+                      refId="Package\\\\Load_Dim_Seller\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[seller_zip_code_prefix]"
                       codePage="1252"
                       dataType="str"
                       length="10"
-                      lineageId="Package\Load_Dim_Seller\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[seller_zip_code_prefix]"
+                      lineageId="Package\\\\Load_Dim_Seller\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[seller_zip_code_prefix]"
                       name="seller_zip_code_prefix" />
                     <outputColumn
-                      refId="Package\Load_Dim_Seller\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[seller_city]"
+                      refId="Package\\\\Load_Dim_Seller\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[seller_city]"
                       codePage="1252"
                       dataType="str"
                       length="100"
-                      lineageId="Package\Load_Dim_Seller\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[seller_city]"
+                      lineageId="Package\\\\Load_Dim_Seller\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[seller_city]"
                       name="seller_city" />
                     <outputColumn
-                      refId="Package\Load_Dim_Seller\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[seller_state]"
+                      refId="Package\\\\Load_Dim_Seller\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[seller_state]"
                       codePage="1252"
                       dataType="str"
                       length="5"
-                      lineageId="Package\Load_Dim_Seller\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[seller_state]"
+                      lineageId="Package\\\\Load_Dim_Seller\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[seller_state]"
                       name="seller_state" />
                     <outputColumn
-                      refId="Package\Load_Dim_Seller\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                      refId="Package\\\\Load_Dim_Seller\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
                       dataType="i4"
-                      lineageId="Package\Load_Dim_Seller\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                      lineageId="Package\\\\Load_Dim_Seller\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
                       name="ErrorCode"
                       specialFlags="1" />
                     <outputColumn
-                      refId="Package\Load_Dim_Seller\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                      refId="Package\\\\Load_Dim_Seller\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
                       dataType="i4"
-                      lineageId="Package\Load_Dim_Seller\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                      lineageId="Package\\\\Load_Dim_Seller\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
                       name="ErrorColumn"
                       specialFlags="2" />
                   </outputColumns>
@@ -919,7 +923,7 @@
               </outputs>
             </component>
             <component
-              refId="Package\Load_Dim_Seller\OLE DB Destination"
+              refId="Package\\\\Load_Dim_Seller\\\\OLE DB Destination"
               componentClassID="Microsoft.OLEDBDestination"
               contactInfo="OLE DB Destination;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;"
               description="Loads Dim_Seller in Olist_DW"
@@ -941,7 +945,7 @@
               </properties>
               <connections>
                 <connection
-                  refId="Package\Load_Dim_Seller\OLE DB Destination.Connections[OleDbConnection]"
+                  refId="Package\\\\Load_Dim_Seller\\\\OLE DB Destination.Connections[OleDbConnection]"
                   connectionManagerID="Package.ConnectionManagers[Olist_DW]"
                   connectionManagerRefId="Package.ConnectionManagers[Olist_DW]"
                   description="The OLE DB runtime connection used to access the database."
@@ -949,66 +953,66 @@
               </connections>
               <inputs>
                 <input
-                  refId="Package\Load_Dim_Seller\OLE DB Destination.Inputs[OLE DB Destination Input]"
+                  refId="Package\\\\Load_Dim_Seller\\\\OLE DB Destination.Inputs[OLE DB Destination Input]"
                   errorOrTruncationOperation="Insert"
                   errorRowDisposition="FailComponent"
                   hasSideEffects="true"
                   name="OLE DB Destination Input">
                   <inputColumns>
                     <inputColumn
-                      refId="Package\Load_Dim_Seller\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[seller_id]"
+                      refId="Package\\\\Load_Dim_Seller\\\\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[seller_id]"
                       cachedCodepage="1252"
                       cachedDataType="str"
                       cachedLength="50"
                       cachedName="seller_id"
-                      externalMetadataColumnId="Package\Load_Dim_Seller\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[SellerBK]"
-                      lineageId="Package\Load_Dim_Seller\OLE DB Source.Outputs[OLE DB Source Output].Columns[seller_id]" />
+                      externalMetadataColumnId="Package\\\\Load_Dim_Seller\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[SellerBK]"
+                      lineageId="Package\\\\Load_Dim_Seller\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[seller_id]" />
                     <inputColumn
-                      refId="Package\Load_Dim_Seller\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[seller_zip_code_prefix]"
+                      refId="Package\\\\Load_Dim_Seller\\\\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[seller_zip_code_prefix]"
                       cachedCodepage="1252"
                       cachedDataType="str"
                       cachedLength="10"
                       cachedName="seller_zip_code_prefix"
-                      externalMetadataColumnId="Package\Load_Dim_Seller\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[SellerZipCode]"
-                      lineageId="Package\Load_Dim_Seller\OLE DB Source.Outputs[OLE DB Source Output].Columns[seller_zip_code_prefix]" />
+                      externalMetadataColumnId="Package\\\\Load_Dim_Seller\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[SellerZipCode]"
+                      lineageId="Package\\\\Load_Dim_Seller\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[seller_zip_code_prefix]" />
                     <inputColumn
-                      refId="Package\Load_Dim_Seller\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[seller_city]"
+                      refId="Package\\\\Load_Dim_Seller\\\\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[seller_city]"
                       cachedCodepage="1252"
                       cachedDataType="str"
                       cachedLength="100"
                       cachedName="seller_city"
-                      externalMetadataColumnId="Package\Load_Dim_Seller\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[SellerCity]"
-                      lineageId="Package\Load_Dim_Seller\OLE DB Source.Outputs[OLE DB Source Output].Columns[seller_city]" />
+                      externalMetadataColumnId="Package\\\\Load_Dim_Seller\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[SellerCity]"
+                      lineageId="Package\\\\Load_Dim_Seller\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[seller_city]" />
                     <inputColumn
-                      refId="Package\Load_Dim_Seller\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[seller_state]"
+                      refId="Package\\\\Load_Dim_Seller\\\\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[seller_state]"
                       cachedCodepage="1252"
                       cachedDataType="str"
                       cachedLength="5"
                       cachedName="seller_state"
-                      externalMetadataColumnId="Package\Load_Dim_Seller\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[SellerState]"
-                      lineageId="Package\Load_Dim_Seller\OLE DB Source.Outputs[OLE DB Source Output].Columns[seller_state]" />
+                      externalMetadataColumnId="Package\\\\Load_Dim_Seller\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[SellerState]"
+                      lineageId="Package\\\\Load_Dim_Seller\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[seller_state]" />
                   </inputColumns>
                   <externalMetadataColumns isUsed="True">
                     <externalMetadataColumn
-                      refId="Package\Load_Dim_Seller\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[SellerBK]"
+                      refId="Package\\\\Load_Dim_Seller\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[SellerBK]"
                       codePage="1252"
                       dataType="str"
                       length="64"
                       name="SellerBK" />
                     <externalMetadataColumn
-                      refId="Package\Load_Dim_Seller\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[SellerZipCode]"
+                      refId="Package\\\\Load_Dim_Seller\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[SellerZipCode]"
                       codePage="1252"
                       dataType="str"
                       length="16"
                       name="SellerZipCode" />
                     <externalMetadataColumn
-                      refId="Package\Load_Dim_Seller\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[SellerCity]"
+                      refId="Package\\\\Load_Dim_Seller\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[SellerCity]"
                       codePage="1252"
                       dataType="str"
                       length="64"
                       name="SellerCity" />
                     <externalMetadataColumn
-                      refId="Package\Load_Dim_Seller\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[SellerState]"
+                      refId="Package\\\\Load_Dim_Seller\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[SellerState]"
                       codePage="1252"
                       dataType="str"
                       length="16"
@@ -1018,22 +1022,22 @@
               </inputs>
               <outputs>
                 <output
-                  refId="Package\Load_Dim_Seller\OLE DB Destination.Outputs[OLE DB Destination Error Output]"
+                  refId="Package\\\\Load_Dim_Seller\\\\OLE DB Destination.Outputs[OLE DB Destination Error Output]"
                   exclusionGroup="1"
                   isErrorOut="true"
                   name="OLE DB Destination Error Output"
-                  synchronousInputId="Package\Load_Dim_Seller\OLE DB Destination.Inputs[OLE DB Destination Input]">
+                  synchronousInputId="Package\\\\Load_Dim_Seller\\\\OLE DB Destination.Inputs[OLE DB Destination Input]">
                   <outputColumns>
                     <outputColumn
-                      refId="Package\Load_Dim_Seller\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                      refId="Package\\\\Load_Dim_Seller\\\\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
                       dataType="i4"
-                      lineageId="Package\Load_Dim_Seller\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                      lineageId="Package\\\\Load_Dim_Seller\\\\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
                       name="ErrorCode"
                       specialFlags="1" />
                     <outputColumn
-                      refId="Package\Load_Dim_Seller\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                      refId="Package\\\\Load_Dim_Seller\\\\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
                       dataType="i4"
-                      lineageId="Package\Load_Dim_Seller\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                      lineageId="Package\\\\Load_Dim_Seller\\\\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
                       name="ErrorColumn"
                       specialFlags="2" />
                   </outputColumns>
@@ -1044,10 +1048,10 @@
           </components>
           <paths>
             <path
-              refId="Package\Load_Dim_Seller.Paths[OLE DB Source Output]"
-              endId="Package\Load_Dim_Seller\OLE DB Destination.Inputs[OLE DB Destination Input]"
+              refId="Package\\\\Load_Dim_Seller.Paths[OLE DB Source Output]"
+              endId="Package\\\\Load_Dim_Seller\\\\OLE DB Destination.Inputs[OLE DB Destination Input]"
               name="OLE DB Source Output"
-              startId="Package\Load_Dim_Seller\OLE DB Source.Outputs[OLE DB Source Output]" />
+              startId="Package\\\\Load_Dim_Seller\\\\OLE DB Source.Outputs[OLE DB Source Output]" />
           </paths>
         </pipeline>
       </DTS:ObjectData>
@@ -1055,7 +1059,7 @@
 
     <!-- Task 4: Load_Dim_Date -->
     <DTS:Executable
-      DTS:refId="Package\Load_Dim_Date"
+      DTS:refId="Package\\\\Load_Dim_Date"
       DTS:CreationName="Microsoft.ExecuteSQLTask"
       DTS:DelayValidation="True"
       DTS:Description="Generates calendar dimension dates in Olist_DW"
@@ -1074,7 +1078,7 @@
 
     <!-- Task 5: Load_Fact_Orders with 3 Lookups -->
     <DTS:Executable
-      DTS:refId="Package\Load_Fact_Orders"
+      DTS:refId="Package\\\\Load_Fact_Orders"
       DTS:CreationName="Microsoft.Pipeline"
       DTS:DelayValidation="True"
       DTS:Description="Extracts delivered transactions and swaps natural keys for surrogate keys using 3 Lookups"
@@ -1090,7 +1094,7 @@
           <components>
             <!-- 1. OLE DB Source -->
             <component
-              refId="Package\Load_Fact_Orders\OLE DB Source"
+              refId="Package\\\\Load_Fact_Orders\\\\OLE DB Source"
               componentClassID="Microsoft.OLEDBSource"
               contactInfo="OLE DB Source;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;"
               description="Extracts delivered order transactions from Olist_OLTP"
@@ -1110,7 +1114,7 @@
               </properties>
               <connections>
                 <connection
-                  refId="Package\Load_Fact_Orders\OLE DB Source.Connections[OleDbConnection]"
+                  refId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Connections[OleDbConnection]"
                   connectionManagerID="Package.ConnectionManagers[Olist_OLTP]"
                   connectionManagerRefId="Package.ConnectionManagers[Olist_OLTP]"
                   description="The OLE DB runtime connection used to access the database."
@@ -1118,250 +1122,250 @@
               </connections>
               <outputs>
                 <output
-                  refId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output]"
+                  refId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output]"
                   name="OLE DB Source Output">
                   <outputColumns>
                     <outputColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].Columns[order_id]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[order_id]"
                       codePage="1252"
                       dataType="str"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[order_id]"
+                      externalMetadataColumnId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[order_id]"
                       length="50"
-                      lineageId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].Columns[order_id]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[order_id]"
                       name="order_id"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].Columns[order_item_id]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[order_item_id]"
                       dataType="i4"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[order_item_id]"
-                      lineageId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].Columns[order_item_id]"
+                      externalMetadataColumnId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[order_item_id]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[order_item_id]"
                       name="order_item_id"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].Columns[customer_id]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[customer_id]"
                       codePage="1252"
                       dataType="str"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[customer_id]"
+                      externalMetadataColumnId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[customer_id]"
                       length="64"
-                      lineageId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].Columns[customer_id]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[customer_id]"
                       name="customer_id"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_id]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_id]"
                       codePage="1252"
                       dataType="str"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[product_id]"
+                      externalMetadataColumnId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[product_id]"
                       length="64"
-                      lineageId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_id]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_id]"
                       name="product_id"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].Columns[seller_id]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[seller_id]"
                       codePage="1252"
                       dataType="str"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[seller_id]"
+                      externalMetadataColumnId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[seller_id]"
                       length="64"
-                      lineageId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].Columns[seller_id]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[seller_id]"
                       name="seller_id"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].Columns[DateKey]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[DateKey]"
                       dataType="i4"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[DateKey]"
-                      lineageId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].Columns[DateKey]"
+                      externalMetadataColumnId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[DateKey]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[DateKey]"
                       name="DateKey"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].Columns[price]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[price]"
                       dataType="numeric"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[price]"
-                      lineageId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].Columns[price]"
+                      externalMetadataColumnId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[price]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[price]"
                       name="price"
                       precision="18"
                       scale="2"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].Columns[freight_value]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[freight_value]"
                       dataType="numeric"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[freight_value]"
-                      lineageId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].Columns[freight_value]"
+                      externalMetadataColumnId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[freight_value]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[freight_value]"
                       name="freight_value"
                       precision="18"
                       scale="2"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].Columns[TotalOrderValue]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[TotalOrderValue]"
                       dataType="numeric"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[TotalOrderValue]"
-                      lineageId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].Columns[TotalOrderValue]"
+                      externalMetadataColumnId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[TotalOrderValue]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[TotalOrderValue]"
                       name="TotalOrderValue"
                       precision="18"
                       scale="2"
                       truncationRowDisposition="FailComponent" />
                     <outputColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].Columns[DeliveryTimeDays]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[DeliveryTimeDays]"
                       dataType="i4"
                       errorOrTruncationOperation="Conversion"
                       errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[DeliveryTimeDays]"
-                      lineageId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].Columns[DeliveryTimeDays]"
+                      externalMetadataColumnId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[DeliveryTimeDays]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[DeliveryTimeDays]"
                       name="DeliveryTimeDays"
                       truncationRowDisposition="FailComponent" />
                   </outputColumns>
                   <externalMetadataColumns isUsed="True">
                     <externalMetadataColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[order_id]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[order_id]"
                       codePage="1252"
                       dataType="str"
                       length="50"
                       name="order_id" />
                     <externalMetadataColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[order_item_id]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[order_item_id]"
                       dataType="i4"
                       name="order_item_id" />
                     <externalMetadataColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[customer_id]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[customer_id]"
                       codePage="1252"
                       dataType="str"
                       length="64"
                       name="customer_id" />
                     <externalMetadataColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[product_id]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[product_id]"
                       codePage="1252"
                       dataType="str"
                       length="64"
                       name="product_id" />
                     <externalMetadataColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[seller_id]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[seller_id]"
                       codePage="1252"
                       dataType="str"
                       length="64"
                       name="seller_id" />
                     <externalMetadataColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[DateKey]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[DateKey]"
                       dataType="i4"
                       name="DateKey" />
                     <externalMetadataColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[price]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[price]"
                       dataType="numeric"
                       name="price"
                       precision="18"
                       scale="2" />
                     <externalMetadataColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[freight_value]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[freight_value]"
                       dataType="numeric"
                       name="freight_value"
                       precision="18"
                       scale="2" />
                     <externalMetadataColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[TotalOrderValue]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[TotalOrderValue]"
                       dataType="numeric"
                       name="TotalOrderValue"
                       precision="18"
                       scale="2" />
                     <externalMetadataColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[DeliveryTimeDays]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].ExternalColumns[DeliveryTimeDays]"
                       dataType="i4"
                       name="DeliveryTimeDays" />
                   </externalMetadataColumns>
                 </output>
                 <output
-                  refId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Error Output]"
+                  refId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Error Output]"
                   isErrorOut="true"
                   name="OLE DB Source Error Output">
                   <outputColumns>
                     <outputColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[order_id]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[order_id]"
                       codePage="1252"
                       dataType="str"
                       length="50"
-                      lineageId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[order_id]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[order_id]"
                       name="order_id" />
                     <outputColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[order_item_id]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[order_item_id]"
                       dataType="i4"
-                      lineageId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[order_item_id]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[order_item_id]"
                       name="order_item_id" />
                     <outputColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[customer_id]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[customer_id]"
                       codePage="1252"
                       dataType="str"
                       length="64"
-                      lineageId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[customer_id]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[customer_id]"
                       name="customer_id" />
                     <outputColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[product_id]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[product_id]"
                       codePage="1252"
                       dataType="str"
                       length="64"
-                      lineageId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[product_id]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[product_id]"
                       name="product_id" />
                     <outputColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[seller_id]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[seller_id]"
                       codePage="1252"
                       dataType="str"
                       length="64"
-                      lineageId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[seller_id]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[seller_id]"
                       name="seller_id" />
                     <outputColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[DateKey]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[DateKey]"
                       dataType="i4"
-                      lineageId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[DateKey]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[DateKey]"
                       name="DateKey" />
                     <outputColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[price]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[price]"
                       dataType="numeric"
-                      lineageId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[price]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[price]"
                       name="price"
                       precision="18"
                       scale="2" />
                     <outputColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[freight_value]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[freight_value]"
                       dataType="numeric"
-                      lineageId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[freight_value]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[freight_value]"
                       name="freight_value"
                       precision="18"
                       scale="2" />
                     <outputColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[TotalOrderValue]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[TotalOrderValue]"
                       dataType="numeric"
-                      lineageId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[TotalOrderValue]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[TotalOrderValue]"
                       name="TotalOrderValue"
                       precision="18"
                       scale="2" />
                     <outputColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[DeliveryTimeDays]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[DeliveryTimeDays]"
                       dataType="i4"
-                      lineageId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[DeliveryTimeDays]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[DeliveryTimeDays]"
                       name="DeliveryTimeDays" />
                     <outputColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
                       dataType="i4"
-                      lineageId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
                       name="ErrorCode"
                       specialFlags="1" />
                     <outputColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
                       dataType="i4"
-                      lineageId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
                       name="ErrorColumn"
                       specialFlags="2" />
                   </outputColumns>
@@ -1372,7 +1376,7 @@
 
             <!-- 2. Lookup: Customer -->
             <component
-              refId="Package\Load_Fact_Orders\Customer"
+              refId="Package\\\\Load_Fact_Orders\\\\Customer"
               componentClassID="Microsoft.Lookup"
               contactInfo="Lookup;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;"
               description="Looks up CustomerSK from Dim_Customer"
@@ -1389,7 +1393,7 @@
               </properties>
               <connections>
                 <connection
-                  refId="Package\Load_Fact_Orders\Customer.Connections[OleDbConnection]"
+                  refId="Package\\\\Load_Fact_Orders\\\\Customer.Connections[OleDbConnection]"
                   connectionManagerID="Package.ConnectionManagers[Olist_DW]"
                   connectionManagerRefId="Package.ConnectionManagers[Olist_DW]"
                   description="Connection manager used to access lookup data."
@@ -1397,16 +1401,16 @@
               </connections>
               <inputs>
                 <input
-                  refId="Package\Load_Fact_Orders\Customer.Inputs[Lookup Input]"
+                  refId="Package\\\\Load_Fact_Orders\\\\Customer.Inputs[Lookup Input]"
                   name="Lookup Input">
                   <inputColumns>
                     <inputColumn
-                      refId="Package\Load_Fact_Orders\Customer.Inputs[Lookup Input].Columns[customer_id]"
+                      refId="Package\\\\Load_Fact_Orders\\\\Customer.Inputs[Lookup Input].Columns[customer_id]"
                       cachedCodepage="1252"
                       cachedDataType="str"
                       cachedLength="64"
                       cachedName="customer_id"
-                      lineageId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].Columns[customer_id]">
+                      lineageId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[customer_id]">
                       <properties>
                         <property dataType="System.String" description="Specifies the column in the reference table that a column joins." name="JoinToReferenceColumn">CustomerBK</property>
                         <property dataType="System.Null" description="Specifies the column in the reference table from which a column is copied." name="CopyFromReferenceColumn" />
@@ -1418,18 +1422,18 @@
               </inputs>
               <outputs>
                 <output
-                  refId="Package\Load_Fact_Orders\Customer.Outputs[Lookup Match Output]"
+                  refId="Package\\\\Load_Fact_Orders\\\\Customer.Outputs[Lookup Match Output]"
                   errorOrTruncationOperation="Lookup"
                   errorRowDisposition="FailComponent"
                   exclusionGroup="1"
                   name="Lookup Match Output"
-                  synchronousInputId="Package\Load_Fact_Orders\Customer.Inputs[Lookup Input]">
+                  synchronousInputId="Package\\\\Load_Fact_Orders\\\\Customer.Inputs[Lookup Input]">
                   <outputColumns>
                     <outputColumn
-                      refId="Package\Load_Fact_Orders\Customer.Outputs[Lookup Match Output].Columns[CustomerSK]"
+                      refId="Package\\\\Load_Fact_Orders\\\\Customer.Outputs[Lookup Match Output].Columns[CustomerSK]"
                       dataType="i4"
                       errorOrTruncationOperation="Copy Column"
-                      lineageId="Package\Load_Fact_Orders\Customer.Outputs[Lookup Match Output].Columns[CustomerSK]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\Customer.Outputs[Lookup Match Output].Columns[CustomerSK]"
                       name="CustomerSK"
                       truncationRowDisposition="FailComponent">
                       <properties>
@@ -1440,30 +1444,30 @@
                   <externalMetadataColumns />
                 </output>
                 <output
-                  refId="Package\Load_Fact_Orders\Customer.Outputs[Lookup No Match Output]"
+                  refId="Package\\\\Load_Fact_Orders\\\\Customer.Outputs[Lookup No Match Output]"
                   description="The Lookup output that handles rows with no matching entries in the reference dataset."
                   exclusionGroup="1"
                   name="Lookup No Match Output"
-                  synchronousInputId="Package\Load_Fact_Orders\Customer.Inputs[Lookup Input]">
+                  synchronousInputId="Package\\\\Load_Fact_Orders\\\\Customer.Inputs[Lookup Input]">
                   <externalMetadataColumns />
                 </output>
                 <output
-                  refId="Package\Load_Fact_Orders\Customer.Outputs[Lookup Error Output]"
+                  refId="Package\\\\Load_Fact_Orders\\\\Customer.Outputs[Lookup Error Output]"
                   exclusionGroup="1"
                   isErrorOut="true"
                   name="Lookup Error Output"
-                  synchronousInputId="Package\Load_Fact_Orders\Customer.Inputs[Lookup Input]">
+                  synchronousInputId="Package\\\\Load_Fact_Orders\\\\Customer.Inputs[Lookup Input]">
                   <outputColumns>
                     <outputColumn
-                      refId="Package\Load_Fact_Orders\Customer.Outputs[Lookup Error Output].Columns[ErrorCode]"
+                      refId="Package\\\\Load_Fact_Orders\\\\Customer.Outputs[Lookup Error Output].Columns[ErrorCode]"
                       dataType="i4"
-                      lineageId="Package\Load_Fact_Orders\Customer.Outputs[Lookup Error Output].Columns[ErrorCode]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\Customer.Outputs[Lookup Error Output].Columns[ErrorCode]"
                       name="ErrorCode"
                       specialFlags="1" />
                     <outputColumn
-                      refId="Package\Load_Fact_Orders\Customer.Outputs[Lookup Error Output].Columns[ErrorColumn]"
+                      refId="Package\\\\Load_Fact_Orders\\\\Customer.Outputs[Lookup Error Output].Columns[ErrorColumn]"
                       dataType="i4"
-                      lineageId="Package\Load_Fact_Orders\Customer.Outputs[Lookup Error Output].Columns[ErrorColumn]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\Customer.Outputs[Lookup Error Output].Columns[ErrorColumn]"
                       name="ErrorColumn"
                       specialFlags="2" />
                   </outputColumns>
@@ -1474,7 +1478,7 @@
 
             <!-- 3. Lookup: Product -->
             <component
-              refId="Package\Load_Fact_Orders\Product"
+              refId="Package\\\\Load_Fact_Orders\\\\Product"
               componentClassID="Microsoft.Lookup"
               contactInfo="Lookup;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;"
               description="Looks up ProductSK from Dim_Product"
@@ -1491,7 +1495,7 @@
               </properties>
               <connections>
                 <connection
-                  refId="Package\Load_Fact_Orders\Product.Connections[OleDbConnection]"
+                  refId="Package\\\\Load_Fact_Orders\\\\Product.Connections[OleDbConnection]"
                   connectionManagerID="Package.ConnectionManagers[Olist_DW]"
                   connectionManagerRefId="Package.ConnectionManagers[Olist_DW]"
                   description="Connection manager used to access lookup data."
@@ -1499,16 +1503,16 @@
               </connections>
               <inputs>
                 <input
-                  refId="Package\Load_Fact_Orders\Product.Inputs[Lookup Input]"
+                  refId="Package\\\\Load_Fact_Orders\\\\Product.Inputs[Lookup Input]"
                   name="Lookup Input">
                   <inputColumns>
                     <inputColumn
-                      refId="Package\Load_Fact_Orders\Product.Inputs[Lookup Input].Columns[product_id]"
+                      refId="Package\\\\Load_Fact_Orders\\\\Product.Inputs[Lookup Input].Columns[product_id]"
                       cachedCodepage="1252"
                       cachedDataType="str"
                       cachedLength="64"
                       cachedName="product_id"
-                      lineageId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_id]">
+                      lineageId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[product_id]">
                       <properties>
                         <property dataType="System.String" description="Specifies the column in the reference table that a column joins." name="JoinToReferenceColumn">ProductBK</property>
                         <property dataType="System.Null" description="Specifies the column in the reference table from which a column is copied." name="CopyFromReferenceColumn" />
@@ -1520,18 +1524,18 @@
               </inputs>
               <outputs>
                 <output
-                  refId="Package\Load_Fact_Orders\Product.Outputs[Lookup Match Output]"
+                  refId="Package\\\\Load_Fact_Orders\\\\Product.Outputs[Lookup Match Output]"
                   errorOrTruncationOperation="Lookup"
                   errorRowDisposition="FailComponent"
                   exclusionGroup="1"
                   name="Lookup Match Output"
-                  synchronousInputId="Package\Load_Fact_Orders\Product.Inputs[Lookup Input]">
+                  synchronousInputId="Package\\\\Load_Fact_Orders\\\\Product.Inputs[Lookup Input]">
                   <outputColumns>
                     <outputColumn
-                      refId="Package\Load_Fact_Orders\Product.Outputs[Lookup Match Output].Columns[ProductSK]"
+                      refId="Package\\\\Load_Fact_Orders\\\\Product.Outputs[Lookup Match Output].Columns[ProductSK]"
                       dataType="i4"
                       errorOrTruncationOperation="Copy Column"
-                      lineageId="Package\Load_Fact_Orders\Product.Outputs[Lookup Match Output].Columns[ProductSK]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\Product.Outputs[Lookup Match Output].Columns[ProductSK]"
                       name="ProductSK"
                       truncationRowDisposition="FailComponent">
                       <properties>
@@ -1542,30 +1546,30 @@
                   <externalMetadataColumns />
                 </output>
                 <output
-                  refId="Package\Load_Fact_Orders\Product.Outputs[Lookup No Match Output]"
+                  refId="Package\\\\Load_Fact_Orders\\\\Product.Outputs[Lookup No Match Output]"
                   description="The Lookup output that handles rows with no matching entries in the reference dataset."
                   exclusionGroup="1"
                   name="Lookup No Match Output"
-                  synchronousInputId="Package\Load_Fact_Orders\Product.Inputs[Lookup Input]">
+                  synchronousInputId="Package\\\\Load_Fact_Orders\\\\Product.Inputs[Lookup Input]">
                   <externalMetadataColumns />
                 </output>
                 <output
-                  refId="Package\Load_Fact_Orders\Product.Outputs[Lookup Error Output]"
+                  refId="Package\\\\Load_Fact_Orders\\\\Product.Outputs[Lookup Error Output]"
                   exclusionGroup="1"
                   isErrorOut="true"
                   name="Lookup Error Output"
-                  synchronousInputId="Package\Load_Fact_Orders\Product.Inputs[Lookup Input]">
+                  synchronousInputId="Package\\\\Load_Fact_Orders\\\\Product.Inputs[Lookup Input]">
                   <outputColumns>
                     <outputColumn
-                      refId="Package\Load_Fact_Orders\Product.Outputs[Lookup Error Output].Columns[ErrorCode]"
+                      refId="Package\\\\Load_Fact_Orders\\\\Product.Outputs[Lookup Error Output].Columns[ErrorCode]"
                       dataType="i4"
-                      lineageId="Package\Load_Fact_Orders\Product.Outputs[Lookup Error Output].Columns[ErrorCode]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\Product.Outputs[Lookup Error Output].Columns[ErrorCode]"
                       name="ErrorCode"
                       specialFlags="1" />
                     <outputColumn
-                      refId="Package\Load_Fact_Orders\Product.Outputs[Lookup Error Output].Columns[ErrorColumn]"
+                      refId="Package\\\\Load_Fact_Orders\\\\Product.Outputs[Lookup Error Output].Columns[ErrorColumn]"
                       dataType="i4"
-                      lineageId="Package\Load_Fact_Orders\Product.Outputs[Lookup Error Output].Columns[ErrorColumn]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\Product.Outputs[Lookup Error Output].Columns[ErrorColumn]"
                       name="ErrorColumn"
                       specialFlags="2" />
                   </outputColumns>
@@ -1576,7 +1580,7 @@
 
             <!-- 4. Lookup: Seller -->
             <component
-              refId="Package\Load_Fact_Orders\Seller"
+              refId="Package\\\\Load_Fact_Orders\\\\Seller"
               componentClassID="Microsoft.Lookup"
               contactInfo="Lookup;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;"
               description="Looks up SellerSK from Dim_Seller"
@@ -1593,7 +1597,7 @@
               </properties>
               <connections>
                 <connection
-                  refId="Package\Load_Fact_Orders\Seller.Connections[OleDbConnection]"
+                  refId="Package\\\\Load_Fact_Orders\\\\Seller.Connections[OleDbConnection]"
                   connectionManagerID="Package.ConnectionManagers[Olist_DW]"
                   connectionManagerRefId="Package.ConnectionManagers[Olist_DW]"
                   description="Connection manager used to access lookup data."
@@ -1601,16 +1605,16 @@
               </connections>
               <inputs>
                 <input
-                  refId="Package\Load_Fact_Orders\Seller.Inputs[Lookup Input]"
+                  refId="Package\\\\Load_Fact_Orders\\\\Seller.Inputs[Lookup Input]"
                   name="Lookup Input">
                   <inputColumns>
                     <inputColumn
-                      refId="Package\Load_Fact_Orders\Seller.Inputs[Lookup Input].Columns[seller_id]"
+                      refId="Package\\\\Load_Fact_Orders\\\\Seller.Inputs[Lookup Input].Columns[seller_id]"
                       cachedCodepage="1252"
                       cachedDataType="str"
                       cachedLength="64"
                       cachedName="seller_id"
-                      lineageId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].Columns[seller_id]">
+                      lineageId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[seller_id]">
                       <properties>
                         <property dataType="System.String" description="Specifies the column in the reference table that a column joins." name="JoinToReferenceColumn">SellerBK</property>
                         <property dataType="System.Null" description="Specifies the column in the reference table from which a column is copied." name="CopyFromReferenceColumn" />
@@ -1622,18 +1626,18 @@
               </inputs>
               <outputs>
                 <output
-                  refId="Package\Load_Fact_Orders\Seller.Outputs[Lookup Match Output]"
+                  refId="Package\\\\Load_Fact_Orders\\\\Seller.Outputs[Lookup Match Output]"
                   errorOrTruncationOperation="Lookup"
                   errorRowDisposition="FailComponent"
                   exclusionGroup="1"
                   name="Lookup Match Output"
-                  synchronousInputId="Package\Load_Fact_Orders\Seller.Inputs[Lookup Input]">
+                  synchronousInputId="Package\\\\Load_Fact_Orders\\\\Seller.Inputs[Lookup Input]">
                   <outputColumns>
                     <outputColumn
-                      refId="Package\Load_Fact_Orders\Seller.Outputs[Lookup Match Output].Columns[SellerSK]"
+                      refId="Package\\\\Load_Fact_Orders\\\\Seller.Outputs[Lookup Match Output].Columns[SellerSK]"
                       dataType="i4"
                       errorOrTruncationOperation="Copy Column"
-                      lineageId="Package\Load_Fact_Orders\Seller.Outputs[Lookup Match Output].Columns[SellerSK]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\Seller.Outputs[Lookup Match Output].Columns[SellerSK]"
                       name="SellerSK"
                       truncationRowDisposition="FailComponent">
                       <properties>
@@ -1644,30 +1648,30 @@
                   <externalMetadataColumns />
                 </output>
                 <output
-                  refId="Package\Load_Fact_Orders\Seller.Outputs[Lookup No Match Output]"
+                  refId="Package\\\\Load_Fact_Orders\\\\Seller.Outputs[Lookup No Match Output]"
                   description="The Lookup output that handles rows with no matching entries in the reference dataset."
                   exclusionGroup="1"
                   name="Lookup No Match Output"
-                  synchronousInputId="Package\Load_Fact_Orders\Seller.Inputs[Lookup Input]">
+                  synchronousInputId="Package\\\\Load_Fact_Orders\\\\Seller.Inputs[Lookup Input]">
                   <externalMetadataColumns />
                 </output>
                 <output
-                  refId="Package\Load_Fact_Orders\Seller.Outputs[Lookup Error Output]"
+                  refId="Package\\\\Load_Fact_Orders\\\\Seller.Outputs[Lookup Error Output]"
                   exclusionGroup="1"
                   isErrorOut="true"
                   name="Lookup Error Output"
-                  synchronousInputId="Package\Load_Fact_Orders\Seller.Inputs[Lookup Input]">
+                  synchronousInputId="Package\\\\Load_Fact_Orders\\\\Seller.Inputs[Lookup Input]">
                   <outputColumns>
                     <outputColumn
-                      refId="Package\Load_Fact_Orders\Seller.Outputs[Lookup Error Output].Columns[ErrorCode]"
+                      refId="Package\\\\Load_Fact_Orders\\\\Seller.Outputs[Lookup Error Output].Columns[ErrorCode]"
                       dataType="i4"
-                      lineageId="Package\Load_Fact_Orders\Seller.Outputs[Lookup Error Output].Columns[ErrorCode]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\Seller.Outputs[Lookup Error Output].Columns[ErrorCode]"
                       name="ErrorCode"
                       specialFlags="1" />
                     <outputColumn
-                      refId="Package\Load_Fact_Orders\Seller.Outputs[Lookup Error Output].Columns[ErrorColumn]"
+                      refId="Package\\\\Load_Fact_Orders\\\\Seller.Outputs[Lookup Error Output].Columns[ErrorColumn]"
                       dataType="i4"
-                      lineageId="Package\Load_Fact_Orders\Seller.Outputs[Lookup Error Output].Columns[ErrorColumn]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\Seller.Outputs[Lookup Error Output].Columns[ErrorColumn]"
                       name="ErrorColumn"
                       specialFlags="2" />
                   </outputColumns>
@@ -1678,7 +1682,7 @@
 
             <!-- 5. OLE DB Destination -->
             <component
-              refId="Package\Load_Fact_Orders\OLE DB Destination"
+              refId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination"
               componentClassID="Microsoft.OLEDBDestination"
               contactInfo="OLE DB Destination;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;"
               description="Loads Fact_Orders in Olist_DW"
@@ -1700,7 +1704,7 @@
               </properties>
               <connections>
                 <connection
-                  refId="Package\Load_Fact_Orders\OLE DB Destination.Connections[OleDbConnection]"
+                  refId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Connections[OleDbConnection]"
                   connectionManagerID="Package.ConnectionManagers[Olist_DW]"
                   connectionManagerRefId="Package.ConnectionManagers[Olist_DW]"
                   description="The OLE DB runtime connection used to access the database."
@@ -1708,128 +1712,128 @@
               </connections>
               <inputs>
                 <input
-                  refId="Package\Load_Fact_Orders\OLE DB Destination.Inputs[OLE DB Destination Input]"
+                  refId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Inputs[OLE DB Destination Input]"
                   errorOrTruncationOperation="Insert"
                   errorRowDisposition="FailComponent"
                   hasSideEffects="true"
                   name="OLE DB Destination Input">
                   <inputColumns>
                     <inputColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[order_id]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[order_id]"
                       cachedCodepage="1252"
                       cachedDataType="str"
                       cachedLength="50"
                       cachedName="order_id"
-                      externalMetadataColumnId="Package\Load_Fact_Orders\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[OrderBK]"
-                      lineageId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].Columns[order_id]" />
+                      externalMetadataColumnId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[OrderBK]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[order_id]" />
                     <inputColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[order_item_id]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[order_item_id]"
                       cachedDataType="i4"
                       cachedName="order_item_id"
-                      externalMetadataColumnId="Package\Load_Fact_Orders\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[OrderItemBK]"
-                      lineageId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].Columns[order_item_id]" />
+                      externalMetadataColumnId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[OrderItemBK]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[order_item_id]" />
                     <inputColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[CustomerSK]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[CustomerSK]"
                       cachedDataType="i4"
                       cachedName="CustomerSK"
-                      externalMetadataColumnId="Package\Load_Fact_Orders\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CustomerSK]"
-                      lineageId="Package\Load_Fact_Orders\Customer.Outputs[Lookup Match Output].Columns[CustomerSK]" />
+                      externalMetadataColumnId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CustomerSK]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\Customer.Outputs[Lookup Match Output].Columns[CustomerSK]" />
                     <inputColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[ProductSK]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[ProductSK]"
                       cachedDataType="i4"
                       cachedName="ProductSK"
-                      externalMetadataColumnId="Package\Load_Fact_Orders\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ProductSK]"
-                      lineageId="Package\Load_Fact_Orders\Product.Outputs[Lookup Match Output].Columns[ProductSK]" />
+                      externalMetadataColumnId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ProductSK]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\Product.Outputs[Lookup Match Output].Columns[ProductSK]" />
                     <inputColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[SellerSK]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[SellerSK]"
                       cachedDataType="i4"
                       cachedName="SellerSK"
-                      externalMetadataColumnId="Package\Load_Fact_Orders\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[SellerSK]"
-                      lineageId="Package\Load_Fact_Orders\Seller.Outputs[Lookup Match Output].Columns[SellerSK]" />
+                      externalMetadataColumnId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[SellerSK]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\Seller.Outputs[Lookup Match Output].Columns[SellerSK]" />
                     <inputColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[DateKey]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[DateKey]"
                       cachedDataType="i4"
                       cachedName="DateKey"
-                      externalMetadataColumnId="Package\Load_Fact_Orders\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[DateKey]"
-                      lineageId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].Columns[DateKey]" />
+                      externalMetadataColumnId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[DateKey]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[DateKey]" />
                     <inputColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[price]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[price]"
                       cachedDataType="numeric"
                       cachedName="price"
                       cachedPrecision="18"
                       cachedScale="2"
-                      externalMetadataColumnId="Package\Load_Fact_Orders\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Price]"
-                      lineageId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].Columns[price]" />
+                      externalMetadataColumnId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Price]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[price]" />
                     <inputColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[freight_value]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[freight_value]"
                       cachedDataType="numeric"
                       cachedName="freight_value"
                       cachedPrecision="18"
                       cachedScale="2"
-                      externalMetadataColumnId="Package\Load_Fact_Orders\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[FreightValue]"
-                      lineageId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].Columns[freight_value]" />
+                      externalMetadataColumnId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[FreightValue]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[freight_value]" />
                     <inputColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[TotalOrderValue]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[TotalOrderValue]"
                       cachedDataType="numeric"
                       cachedName="TotalOrderValue"
                       cachedPrecision="18"
                       cachedScale="2"
-                      externalMetadataColumnId="Package\Load_Fact_Orders\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[TotalOrderValue]"
-                      lineageId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].Columns[TotalOrderValue]" />
+                      externalMetadataColumnId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[TotalOrderValue]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[TotalOrderValue]" />
                     <inputColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[DeliveryTimeDays]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Inputs[OLE DB Destination Input].Columns[DeliveryTimeDays]"
                       cachedDataType="i4"
                       cachedName="DeliveryTimeDays"
-                      externalMetadataColumnId="Package\Load_Fact_Orders\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[DeliveryTimeDays]"
-                      lineageId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output].Columns[DeliveryTimeDays]" />
+                      externalMetadataColumnId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[DeliveryTimeDays]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output].Columns[DeliveryTimeDays]" />
                   </inputColumns>
                   <externalMetadataColumns isUsed="True">
                     <externalMetadataColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[OrderBK]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[OrderBK]"
                       codePage="1252"
                       dataType="str"
                       length="64"
                       name="OrderBK" />
                     <externalMetadataColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[OrderItemBK]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[OrderItemBK]"
                       dataType="i4"
                       name="OrderItemBK" />
                     <externalMetadataColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CustomerSK]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[CustomerSK]"
                       dataType="i4"
                       name="CustomerSK" />
                     <externalMetadataColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ProductSK]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[ProductSK]"
                       dataType="i4"
                       name="ProductSK" />
                     <externalMetadataColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[SellerSK]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[SellerSK]"
                       dataType="i4"
                       name="SellerSK" />
                     <externalMetadataColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[DateKey]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[DateKey]"
                       dataType="i4"
                       name="DateKey" />
                     <externalMetadataColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Price]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[Price]"
                       dataType="numeric"
                       name="Price"
                       precision="18"
                       scale="2" />
                     <externalMetadataColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[FreightValue]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[FreightValue]"
                       dataType="numeric"
                       name="FreightValue"
                       precision="18"
                       scale="2" />
                     <externalMetadataColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[TotalOrderValue]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[TotalOrderValue]"
                       dataType="numeric"
                       name="TotalOrderValue"
                       precision="18"
                       scale="2" />
                     <externalMetadataColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[DeliveryTimeDays]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Inputs[OLE DB Destination Input].ExternalColumns[DeliveryTimeDays]"
                       dataType="i4"
                       name="DeliveryTimeDays" />
                   </externalMetadataColumns>
@@ -1837,22 +1841,22 @@
               </inputs>
               <outputs>
                 <output
-                  refId="Package\Load_Fact_Orders\OLE DB Destination.Outputs[OLE DB Destination Error Output]"
+                  refId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Outputs[OLE DB Destination Error Output]"
                   exclusionGroup="1"
                   isErrorOut="true"
                   name="OLE DB Destination Error Output"
-                  synchronousInputId="Package\Load_Fact_Orders\OLE DB Destination.Inputs[OLE DB Destination Input]">
+                  synchronousInputId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Inputs[OLE DB Destination Input]">
                   <outputColumns>
                     <outputColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
                       dataType="i4"
-                      lineageId="Package\Load_Fact_Orders\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
                       name="ErrorCode"
                       specialFlags="1" />
                     <outputColumn
-                      refId="Package\Load_Fact_Orders\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                      refId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
                       dataType="i4"
-                      lineageId="Package\Load_Fact_Orders\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                      lineageId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
                       name="ErrorColumn"
                       specialFlags="2" />
                   </outputColumns>
@@ -1864,28 +1868,28 @@
           <paths>
             <!-- 1. OLE DB Source -> Customer Lookup -->
             <path
-              refId="Package\Load_Fact_Orders.Paths[OLE DB Source Output]"
-              endId="Package\Load_Fact_Orders\Customer.Inputs[Lookup Input]"
+              refId="Package\\\\Load_Fact_Orders.Paths[OLE DB Source Output]"
+              endId="Package\\\\Load_Fact_Orders\\\\Customer.Inputs[Lookup Input]"
               name="OLE DB Source Output"
-              startId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output]" />
+              startId="Package\\\\Load_Fact_Orders\\\\OLE DB Source.Outputs[OLE DB Source Output]" />
             <!-- 2. Customer Lookup -> Product Lookup -->
             <path
-              refId="Package\Load_Fact_Orders.Paths[Customer Match Output]"
-              endId="Package\Load_Fact_Orders\Product.Inputs[Lookup Input]"
+              refId="Package\\\\Load_Fact_Orders.Paths[Customer Match Output]"
+              endId="Package\\\\Load_Fact_Orders\\\\Product.Inputs[Lookup Input]"
               name="Lookup Match Output"
-              startId="Package\Load_Fact_Orders\Customer.Outputs[Lookup Match Output]" />
+              startId="Package\\\\Load_Fact_Orders\\\\Customer.Outputs[Lookup Match Output]" />
             <!-- 3. Product Lookup -> Seller Lookup -->
             <path
-              refId="Package\Load_Fact_Orders.Paths[Product Match Output]"
-              endId="Package\Load_Fact_Orders\Seller.Inputs[Lookup Input]"
+              refId="Package\\\\Load_Fact_Orders.Paths[Product Match Output]"
+              endId="Package\\\\Load_Fact_Orders\\\\Seller.Inputs[Lookup Input]"
               name="Lookup Match Output"
-              startId="Package\Load_Fact_Orders\Product.Outputs[Lookup Match Output]" />
+              startId="Package\\\\Load_Fact_Orders\\\\Product.Outputs[Lookup Match Output]" />
             <!-- 4. Seller Lookup -> OLE DB Destination -->
             <path
-              refId="Package\Load_Fact_Orders.Paths[Seller Match Output]"
-              endId="Package\Load_Fact_Orders\OLE DB Destination.Inputs[OLE DB Destination Input]"
+              refId="Package\\\\Load_Fact_Orders.Paths[Seller Match Output]"
+              endId="Package\\\\Load_Fact_Orders\\\\OLE DB Destination.Inputs[OLE DB Destination Input]"
               name="Lookup Match Output"
-              startId="Package\Load_Fact_Orders\Seller.Outputs[Lookup Match Output]" />
+              startId="Package\\\\Load_Fact_Orders\\\\Seller.Outputs[Lookup Match Output]" />
           </paths>
         </pipeline>
       </DTS:ObjectData>
@@ -1896,42 +1900,42 @@
       DTS:refId="Package.PrecedenceConstraints[Constraint_Prepare_to_Customer]"
       DTS:CreationName=""
       DTS:DTSID="{C11AA4B6-BB54-7BBC-D665-9D481BA5C411}"
-      DTS:From="Package\Prepare_DW_Tables"
+      DTS:From="Package\\\\Prepare_DW_Tables"
       DTS:LogicalAnd="True"
       DTS:ObjectName="Constraint_Prepare_to_Customer"
-      DTS:To="Package\Load_Dim_Customer" />
+      DTS:To="Package\\\\Load_Dim_Customer" />
     <DTS:PrecedenceConstraint
       DTS:refId="Package.PrecedenceConstraints[Constraint_Customer_to_Product]"
       DTS:CreationName=""
       DTS:DTSID="{D57EA4B6-BB54-7BBC-D665-9D481BA5C423}"
-      DTS:From="Package\Load_Dim_Customer"
+      DTS:From="Package\\\\Load_Dim_Customer"
       DTS:LogicalAnd="True"
       DTS:ObjectName="Constraint_Customer_to_Product"
-      DTS:To="Package\Load_Dim_Product" />
+      DTS:To="Package\\\\Load_Dim_Product" />
     <DTS:PrecedenceConstraint
       DTS:refId="Package.PrecedenceConstraints[Constraint_Product_to_Seller]"
       DTS:CreationName=""
       DTS:DTSID="{B718D934-C82E-44F1-8A1C-8A97F2491A23}"
-      DTS:From="Package\Load_Dim_Product"
+      DTS:From="Package\\\\Load_Dim_Product"
       DTS:LogicalAnd="True"
       DTS:ObjectName="Constraint_Product_to_Seller"
-      DTS:To="Package\Load_Dim_Seller" />
+      DTS:To="Package\\\\Load_Dim_Seller" />
     <DTS:PrecedenceConstraint
       DTS:refId="Package.PrecedenceConstraints[Constraint_Seller_to_Date]"
       DTS:CreationName=""
       DTS:DTSID="{E827B134-8A3F-4189-9A8C-3B4791E47A55}"
-      DTS:From="Package\Load_Dim_Seller"
+      DTS:From="Package\\\\Load_Dim_Seller"
       DTS:LogicalAnd="True"
       DTS:ObjectName="Constraint_Seller_to_Date"
-      DTS:To="Package\Load_Dim_Date" />
+      DTS:To="Package\\\\Load_Dim_Date" />
     <DTS:PrecedenceConstraint
       DTS:refId="Package.PrecedenceConstraints[Constraint_Date_to_Fact]"
       DTS:CreationName=""
       DTS:DTSID="{E68FB5C7-CC65-8CCD-E776-AE592CB6D534}"
-      DTS:From="Package\Load_Dim_Date"
+      DTS:From="Package\\\\Load_Dim_Date"
       DTS:LogicalAnd="True"
       DTS:ObjectName="Constraint_Date_to_Fact"
-      DTS:To="Package\Load_Fact_Orders" />
+      DTS:To="Package\\\\Load_Fact_Orders" />
   </DTS:PrecedenceConstraints>
   <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
 <Objects
@@ -1944,27 +1948,27 @@
         <!-- Control Flow Nodes -->
         <NodeLayout
           Size="180,42"
-          Id="Package\Prepare_DW_Tables"
+          Id="Package\\\\Prepare_DW_Tables"
           TopLeft="100,30" />
         <NodeLayout
           Size="180,42"
-          Id="Package\Load_Dim_Customer"
+          Id="Package\\\\Load_Dim_Customer"
           TopLeft="100,110" />
         <NodeLayout
           Size="180,42"
-          Id="Package\Load_Dim_Product"
+          Id="Package\\\\Load_Dim_Product"
           TopLeft="100,190" />
         <NodeLayout
           Size="180,42"
-          Id="Package\Load_Dim_Seller"
+          Id="Package\\\\Load_Dim_Seller"
           TopLeft="100,270" />
         <NodeLayout
           Size="180,42"
-          Id="Package\Load_Dim_Date"
+          Id="Package\\\\Load_Dim_Date"
           TopLeft="100,350" />
         <NodeLayout
           Size="180,42"
-          Id="Package\Load_Fact_Orders"
+          Id="Package\\\\Load_Fact_Orders"
           TopLeft="100,430" />
         <!-- Control Flow Edges -->
         <EdgeLayout
@@ -2081,33 +2085,33 @@
     </LayoutInfo>
   </Package>
   <Task
-    design-time-name="Package\Load_Fact_Orders">
+    design-time-name="Package\\\\Load_Fact_Orders">
     <LayoutInfo>
       <GraphLayout
         Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
         <NodeLayout
           Size="152,42"
-          Id="Package\Load_Fact_Orders\OLE DB Source"
+          Id="Package\\\\Load_Fact_Orders\\\\OLE DB Source"
           TopLeft="50,30" />
         <NodeLayout
           Size="125,42"
-          Id="Package\Load_Fact_Orders\Customer"
+          Id="Package\\\\Load_Fact_Orders\\\\Customer"
           TopLeft="110,110" />
         <NodeLayout
           Size="116,42"
-          Id="Package\Load_Fact_Orders\Product"
+          Id="Package\\\\Load_Fact_Orders\\\\Product"
           TopLeft="230,190" />
         <NodeLayout
           Size="106,42"
-          Id="Package\Load_Fact_Orders\Seller"
+          Id="Package\\\\Load_Fact_Orders\\\\Seller"
           TopLeft="350,270" />
         <NodeLayout
           Size="173,42"
-          Id="Package\Load_Fact_Orders\OLE DB Destination"
+          Id="Package\\\\Load_Fact_Orders\\\\OLE DB Destination"
           TopLeft="260,360" />
         <!-- Data Flow Edges with Lookup Match Output -->
         <EdgeLayout
-          Id="Package\Load_Fact_Orders.Paths[OLE DB Source Output]"
+          Id="Package\\\\Load_Fact_Orders.Paths[OLE DB Source Output]"
           TopLeft="126,72">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -2141,7 +2145,7 @@
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\Load_Fact_Orders.Paths[Customer Match Output]"
+          Id="Package\\\\Load_Fact_Orders.Paths[Customer Match Output]"
           TopLeft="172.5,152">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -2185,7 +2189,7 @@
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\Load_Fact_Orders.Paths[Product Match Output]"
+          Id="Package\\\\Load_Fact_Orders.Paths[Product Match Output]"
           TopLeft="288,232">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -2229,7 +2233,7 @@
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package\Load_Fact_Orders.Paths[Seller Match Output]"
+          Id="Package\\\\Load_Fact_Orders.Paths[Seller Match Output]"
           TopLeft="403,312">
           <EdgeLayout.Curve>
             <mssgle:Curve
@@ -2277,3 +2281,9 @@
   </Task>
 </Objects>]]></DTS:DesignTimeProperties>
 </DTS:Executable>
+"""
+
+with open(r"ssis\Olist_ETL\Package.dtsx", "w", encoding="utf-8") as f:
+    f.write(package_content.strip())
+
+print("Successfully written Package.dtsx with 3 Lookups!")
