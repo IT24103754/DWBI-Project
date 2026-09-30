@@ -12,8 +12,9 @@
   DTS:ObjectName="Package"
   DTS:PackageType="5"
   DTS:ProtectionLevel="0"
-  DTS:VersionBuild="2"
-  DTS:VersionGUID="{7F5AA10A-543B-49B5-8095-9DC5AFB190B3}">
+  DTS:DelayValidation="True"
+  DTS:VersionBuild="5"
+  DTS:VersionGUID="{B75AA21A-644B-49C5-9186-0EC5BFA201B4}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -26,7 +27,7 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=localhost;Initial Catalog=Olist_DW;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;" />
+          DTS:ConnectionString="Data Source=localhost;Initial Catalog=Olist_DW;Provider=MSOLEDBSQL;Integrated Security=SSPI;Auto Translate=False;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
     <DTS:ConnectionManager
@@ -38,33 +39,18 @@
         <DTS:ConnectionManager
           DTS:ConnectRetryCount="1"
           DTS:ConnectRetryInterval="5"
-          DTS:ConnectionString="Data Source=localhost;Initial Catalog=Olist_OLTP;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;" />
-      </DTS:ObjectData>
-    </DTS:ConnectionManager>
-    <DTS:ConnectionManager
-      DTS:refId="Package.ConnectionManagers[Products_CSV]"
-      DTS:CreationName="FLATFILE"
-      DTS:DTSID="{47A46B55-5B26-444F-A299-8260D0CD47F5}"
-      DTS:ObjectName="Products_CSV">
-      <DTS:ObjectData>
-        <DTS:ConnectionManager
-          DTS:Format="Delimited"
-          DTS:LocaleID="1033"
-          DTS:HeaderRowDelimiter="_x000D__x000A_"
-          DTS:ColumnNamesInFirstDataRow="True"
-          DTS:RowDelimiter=""
-          DTS:TextQualifier=""
-          DTS:CodePage="1252"
-          DTS:ConnectionString="c:\Users\thuva\OneDrive\Desktop\DWBI Project\Dataset\olist_products_dataset.csv" />
+          DTS:ConnectionString="Data Source=localhost;Initial Catalog=Olist_OLTP;Provider=MSOLEDBSQL;Integrated Security=SSPI;Auto Translate=False;" />
       </DTS:ObjectData>
     </DTS:ConnectionManager>
   </DTS:ConnectionManagers>
   <DTS:Variables />
   <DTS:Executables>
+    <!-- Task 1: Load_Dim_Customer -->
     <DTS:Executable
       DTS:refId="Package\Load_Dim_Customer"
       DTS:CreationName="Microsoft.Pipeline"
-      DTS:Description="Data Flow Task - Extracts Customers from Source and fast-loads Dim_Customer"
+      DTS:DelayValidation="True"
+      DTS:Description="Data Flow Task - Extracts Customers from Olist_OLTP and loads Dim_Customer"
       DTS:DTSID="{A24B91E3-8821-4E8F-A332-6A15E8D291F0}"
       DTS:ExecutableType="Microsoft.Pipeline"
       DTS:LocaleID="-1"
@@ -76,46 +62,67 @@
           version="1">
           <components>
             <component
+              refId="Package\Load_Dim_Customer\OLE DB Source"
+              componentClassID="Microsoft.OLEDBSource"
+              contactInfo="OLE DB Source;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;"
+              description="Extracts customer master data from Olist_OLTP"
+              name="OLE DB Source"
+              usesDispositions="true"
+              version="7">
+              <properties>
+                <property dataType="System.Int32" description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out." name="CommandTimeout">0</property>
+                <property dataType="System.String" description="Specifies the name of the database object used to open a rowset." name="OpenRowset">[dbo].[olist_customers_dataset]</property>
+                <property dataType="System.String" description="Specifies the variable that contains the name of the database object used to open a rowset." name="OpenRowsetVariable"></property>
+                <property dataType="System.String" description="The SQL command to be executed." name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT customer_id, customer_unique_id, customer_zip_code_prefix, customer_city, customer_state FROM dbo.olist_customers_dataset</property>
+                <property dataType="System.String" description="The variable that contains the SQL command to be executed." name="SqlCommandVariable"></property>
+                <property dataType="System.Int32" description="Specifies the column code page to use when code page information is unavailable from the data source." name="DefaultCodePage">1252</property>
+                <property dataType="System.Boolean" description="Forces the use of the DefaultCodePage property value when describing character data." name="AlwaysUseDefaultCodePage">false</property>
+                <property dataType="System.Int32" description="Specifies the mode used to access the database." name="AccessMode" typeConverter="AccessMode">2</property>
+                <property dataType="System.String" description="The mappings between the parameters in the SQL command and variables." name="ParameterMapping"></property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Load_Dim_Customer\OLE DB Source.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[Olist_OLTP]"
+                  connectionManagerRefId="Package.ConnectionManagers[Olist_OLTP]"
+                  description="The OLE DB runtime connection used to access the database."
+                  name="OleDbConnection" />
+              </connections>
+              <outputs>
+                <output
+                  refId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Output]"
+                  name="OLE DB Source Output">
+                  <externalMetadataColumns isUsed="False" />
+                </output>
+              </outputs>
+            </component>
+            <component
               refId="Package\Load_Dim_Customer\OLE DB Destination"
               componentClassID="Microsoft.OLEDBDestination"
               contactInfo="OLE DB Destination;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;"
-              description="OLE DB Destination - Dim_Customer"
+              description="Loads customer dimensions into Olist_DW"
               name="OLE DB Destination"
               usesDispositions="true"
               version="4">
               <properties>
-                <property
-                  dataType="System.Int32"
-                  description="Command timeout"
-                  name="CommandTimeout">0</property>
-                <property
-                  dataType="System.String"
-                  description="OpenRowset"
-                  name="OpenRowset">[dbo].[Dim_Customer]</property>
-                <property
-                  dataType="System.Int32"
-                  description="AccessMode"
-                  name="AccessMode"
-                  typeConverter="AccessMode">3</property>
-                <property
-                  dataType="System.Boolean"
-                  description="FastLoadKeepIdentity"
-                  name="FastLoadKeepIdentity">false</property>
-                <property
-                  dataType="System.Boolean"
-                  description="FastLoadKeepNulls"
-                  name="FastLoadKeepNulls">true</property>
-                <property
-                  dataType="System.String"
-                  description="FastLoadOptions"
-                  name="FastLoadOptions">TABLOCK,CHECK_CONSTRAINTS</property>
+                <property dataType="System.Int32" description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out." name="CommandTimeout">0</property>
+                <property dataType="System.String" description="Specifies the name of the database object used to open a rowset." name="OpenRowset">[dbo].[Dim_Customer]</property>
+                <property dataType="System.String" description="Specifies the variable that contains the name of the database object used to open a rowset." name="OpenRowsetVariable"></property>
+                <property dataType="System.String" description="The SQL command to be executed." name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
+                <property dataType="System.Int32" description="Specifies the column code page to use when code page information is unavailable from the data source." name="DefaultCodePage">1252</property>
+                <property dataType="System.Boolean" description="Forces the use of the DefaultCodePage property value when describing character data." name="AlwaysUseDefaultCodePage">false</property>
+                <property dataType="System.Int32" description="Specifies the mode used to access the database." name="AccessMode" typeConverter="AccessMode">3</property>
+                <property dataType="System.Boolean" description="Indicates whether the values supplied for identity columns will be copied to the destination." name="FastLoadKeepIdentity">false</property>
+                <property dataType="System.Boolean" description="Indicates whether the columns containing null will have null inserted in the destination." name="FastLoadKeepNulls">false</property>
+                <property dataType="System.String" description="Specifies options to be used with fast load." name="FastLoadOptions">TABLOCK,CHECK_CONSTRAINTS</property>
+                <property dataType="System.Int32" description="Specifies when commits are issued during data insertion." name="FastLoadMaxInsertCommitSize">2147483647</property>
               </properties>
               <connections>
                 <connection
                   refId="Package\Load_Dim_Customer\OLE DB Destination.Connections[OleDbConnection]"
                   connectionManagerID="Package.ConnectionManagers[Olist_DW]"
                   connectionManagerRefId="Package.ConnectionManagers[Olist_DW]"
-                  description="Destination Data Warehouse connection"
+                  description="The OLE DB runtime connection used to access the database."
                   name="OleDbConnection" />
               </connections>
               <inputs>
@@ -125,48 +132,9 @@
                   errorRowDisposition="FailComponent"
                   hasSideEffects="true"
                   name="OLE DB Destination Input">
-                  <externalMetadataColumns />
+                  <externalMetadataColumns isUsed="False" />
                 </input>
               </inputs>
-            </component>
-            <component
-              refId="Package\Load_Dim_Customer\OLE DB Source"
-              componentClassID="Microsoft.OLEDBSource"
-              contactInfo="OLE DB Source;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;"
-              description="OLE DB Source - olist_customers_dataset"
-              name="OLE DB Source"
-              usesDispositions="true"
-              version="7">
-              <properties>
-                <property
-                  dataType="System.Int32"
-                  description="Command timeout"
-                  name="CommandTimeout">0</property>
-                <property
-                  dataType="System.String"
-                  description="OpenRowset"
-                  name="OpenRowset">[dbo].[olist_customers_dataset]</property>
-                <property
-                  dataType="System.Int32"
-                  description="AccessMode"
-                  name="AccessMode"
-                  typeConverter="AccessMode">0</property>
-              </properties>
-              <connections>
-                <connection
-                  refId="Package\Load_Dim_Customer\OLE DB Source.Connections[OleDbConnection]"
-                  connectionManagerID="Package.ConnectionManagers[Olist_OLTP]"
-                  connectionManagerRefId="Package.ConnectionManagers[Olist_OLTP]"
-                  description="Source database connection"
-                  name="OleDbConnection" />
-              </connections>
-              <outputs>
-                <output
-                  refId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Output]"
-                  name="OLE DB Source Output">
-                  <externalMetadataColumns />
-                </output>
-              </outputs>
             </component>
           </components>
           <paths>
@@ -179,10 +147,13 @@
         </pipeline>
       </DTS:ObjectData>
     </DTS:Executable>
+
+    <!-- Task 2: Load_Dim_Product -->
     <DTS:Executable
       DTS:refId="Package\Load_Dim_Product"
       DTS:CreationName="Microsoft.Pipeline"
-      DTS:Description="Data Flow Task - Products CSV with Derived Column REPLACENULL"
+      DTS:DelayValidation="True"
+      DTS:Description="Data Flow Task - Extracts Products from Olist_OLTP, applies REPLACENULL, loads Dim_Product"
       DTS:DTSID="{B35C82F4-9932-5F9A-B443-7B26F9E3A201}"
       DTS:ExecutableType="Microsoft.Pipeline"
       DTS:LocaleID="-1"
@@ -194,10 +165,45 @@
           version="1">
           <components>
             <component
+              refId="Package\Load_Dim_Product\OLE DB Source"
+              componentClassID="Microsoft.OLEDBSource"
+              contactInfo="OLE DB Source;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;"
+              description="Extracts products dataset from Olist_OLTP"
+              name="OLE DB Source"
+              usesDispositions="true"
+              version="7">
+              <properties>
+                <property dataType="System.Int32" description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out." name="CommandTimeout">0</property>
+                <property dataType="System.String" description="Specifies the name of the database object used to open a rowset." name="OpenRowset">[dbo].[olist_products_dataset]</property>
+                <property dataType="System.String" description="Specifies the variable that contains the name of the database object used to open a rowset." name="OpenRowsetVariable"></property>
+                <property dataType="System.String" description="The SQL command to be executed." name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT product_id, product_category_name, product_weight_g, product_length_cm, product_height_cm, product_width_cm FROM dbo.olist_products_dataset</property>
+                <property dataType="System.String" description="The variable that contains the SQL command to be executed." name="SqlCommandVariable"></property>
+                <property dataType="System.Int32" description="Specifies the column code page to use when code page information is unavailable from the data source." name="DefaultCodePage">1252</property>
+                <property dataType="System.Boolean" description="Forces the use of the DefaultCodePage property value when describing character data." name="AlwaysUseDefaultCodePage">false</property>
+                <property dataType="System.Int32" description="Specifies the mode used to access the database." name="AccessMode" typeConverter="AccessMode">2</property>
+                <property dataType="System.String" description="The mappings between the parameters in the SQL command and variables." name="ParameterMapping"></property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Load_Dim_Product\OLE DB Source.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[Olist_OLTP]"
+                  connectionManagerRefId="Package.ConnectionManagers[Olist_OLTP]"
+                  description="The OLE DB runtime connection used to access the database."
+                  name="OleDbConnection" />
+              </connections>
+              <outputs>
+                <output
+                  refId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Output]"
+                  name="OLE DB Source Output">
+                  <externalMetadataColumns isUsed="False" />
+                </output>
+              </outputs>
+            </component>
+            <component
               refId="Package\Load_Dim_Product\Derived Column"
               componentClassID="Microsoft.DerivedColumn"
               contactInfo="Derived Column;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;"
-              description="Updates column values using expressions (REPLACENULL)"
+              description="Standardizes missing categories via REPLACENULL"
               name="Derived Column"
               usesDispositions="true">
               <inputs>
@@ -220,77 +226,32 @@
               </outputs>
             </component>
             <component
-              refId="Package\Load_Dim_Product\Flat File Source"
-              componentClassID="Microsoft.FlatFileSource"
-              contactInfo="Flat File Source;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;"
-              description="Flat File Source - Products CSV"
-              name="Flat File Source">
-              <properties>
-                <property
-                  dataType="System.Boolean"
-                  description="RetainNulls"
-                  name="RetainNulls">false</property>
-                <property
-                  dataType="System.String"
-                  description="FileNameColumnName"
-                  name="FileNameColumnName"></property>
-              </properties>
-              <connections>
-                <connection
-                  refId="Package\Load_Dim_Product\Flat File Source.Connections[FlatFileConnection]"
-                  connectionManagerID="Package.ConnectionManagers[Products_CSV]"
-                  connectionManagerRefId="Package.ConnectionManagers[Products_CSV]"
-                  name="FlatFileConnection" />
-              </connections>
-              <outputs>
-                <output
-                  refId="Package\Load_Dim_Product\Flat File Source.Outputs[Flat File Source Output]"
-                  name="Flat File Source Output">
-                  <externalMetadataColumns />
-                </output>
-              </outputs>
-            </component>
-            <component
               refId="Package\Load_Dim_Product\OLE DB Destination"
               componentClassID="Microsoft.OLEDBDestination"
               contactInfo="OLE DB Destination;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;"
-              description="OLE DB Destination - Dim_Product"
+              description="Loads clean product dimensions into Olist_DW"
               name="OLE DB Destination"
               usesDispositions="true"
               version="4">
               <properties>
-                <property
-                  dataType="System.Int32"
-                  description="Command timeout"
-                  name="CommandTimeout">0</property>
-                <property
-                  dataType="System.String"
-                  description="OpenRowset"
-                  name="OpenRowset">[dbo].[Dim_Product]</property>
-                <property
-                  dataType="System.Int32"
-                  description="AccessMode"
-                  name="AccessMode"
-                  typeConverter="AccessMode">3</property>
-                <property
-                  dataType="System.Boolean"
-                  description="FastLoadKeepIdentity"
-                  name="FastLoadKeepIdentity">false</property>
-                <property
-                  dataType="System.Boolean"
-                  description="FastLoadKeepNulls"
-                  name="FastLoadKeepNulls">true</property>
-                <property
-                  dataType="System.String"
-                  description="FastLoadOptions"
-                  name="FastLoadOptions">TABLOCK,CHECK_CONSTRAINTS</property>
+                <property dataType="System.Int32" description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out." name="CommandTimeout">0</property>
+                <property dataType="System.String" description="Specifies the name of the database object used to open a rowset." name="OpenRowset">[dbo].[Dim_Product]</property>
+                <property dataType="System.String" description="Specifies the variable that contains the name of the database object used to open a rowset." name="OpenRowsetVariable"></property>
+                <property dataType="System.String" description="The SQL command to be executed." name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
+                <property dataType="System.Int32" description="Specifies the column code page to use when code page information is unavailable from the data source." name="DefaultCodePage">1252</property>
+                <property dataType="System.Boolean" description="Forces the use of the DefaultCodePage property value when describing character data." name="AlwaysUseDefaultCodePage">false</property>
+                <property dataType="System.Int32" description="Specifies the mode used to access the database." name="AccessMode" typeConverter="AccessMode">3</property>
+                <property dataType="System.Boolean" description="Indicates whether the values supplied for identity columns will be copied to the destination." name="FastLoadKeepIdentity">false</property>
+                <property dataType="System.Boolean" description="Indicates whether the columns containing null will have null inserted in the destination." name="FastLoadKeepNulls">false</property>
+                <property dataType="System.String" description="Specifies options to be used with fast load." name="FastLoadOptions">TABLOCK,CHECK_CONSTRAINTS</property>
+                <property dataType="System.Int32" description="Specifies when commits are issued during data insertion." name="FastLoadMaxInsertCommitSize">2147483647</property>
               </properties>
               <connections>
                 <connection
                   refId="Package\Load_Dim_Product\OLE DB Destination.Connections[OleDbConnection]"
                   connectionManagerID="Package.ConnectionManagers[Olist_DW]"
                   connectionManagerRefId="Package.ConnectionManagers[Olist_DW]"
-                  description="Destination connection"
+                  description="The OLE DB runtime connection used to access the database."
                   name="OleDbConnection" />
               </connections>
               <inputs>
@@ -300,30 +261,33 @@
                   errorRowDisposition="FailComponent"
                   hasSideEffects="true"
                   name="OLE DB Destination Input">
-                  <externalMetadataColumns />
+                  <externalMetadataColumns isUsed="False" />
                 </input>
               </inputs>
             </component>
           </components>
           <paths>
             <path
+              refId="Package\Load_Dim_Product.Paths[OLE DB Source Output]"
+              endId="Package\Load_Dim_Product\Derived Column.Inputs[Derived Column Input]"
+              name="OLE DB Source Output"
+              startId="Package\Load_Dim_Product\OLE DB Source.Outputs[OLE DB Source Output]" />
+            <path
               refId="Package\Load_Dim_Product.Paths[Derived Column Output]"
               endId="Package\Load_Dim_Product\OLE DB Destination.Inputs[OLE DB Destination Input]"
               name="Derived Column Output"
               startId="Package\Load_Dim_Product\Derived Column.Outputs[Derived Column Output]" />
-            <path
-              refId="Package\Load_Dim_Product.Paths[Flat File Source Output]"
-              endId="Package\Load_Dim_Product\Derived Column.Inputs[Derived Column Input]"
-              name="Flat File Source Output"
-              startId="Package\Load_Dim_Product\Flat File Source.Outputs[Flat File Source Output]" />
           </paths>
         </pipeline>
       </DTS:ObjectData>
     </DTS:Executable>
+
+    <!-- Task 3: Load_Fact_Orders -->
     <DTS:Executable
       DTS:refId="Package\Load_Fact_Orders"
       DTS:CreationName="Microsoft.Pipeline"
-      DTS:Description="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;"
+      DTS:DelayValidation="True"
+      DTS:Description="Extracts delivered transactions from Olist_OLTP, resolves surrogate keys via Lookups, loads Fact_Orders"
       DTS:DTSID="{C46D93A5-AA43-6AAB-C554-8C370AF4B312}"
       DTS:ExecutableType="Microsoft.Pipeline"
       DTS:LocaleID="-1"
@@ -335,6 +299,56 @@
           version="1">
           <components>
             <component
+              refId="Package\Load_Fact_Orders\OLE DB Source"
+              componentClassID="Microsoft.OLEDBSource"
+              contactInfo="OLE DB Source;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;"
+              description="Extracts delivered order transactions from Olist_OLTP"
+              name="OLE DB Source"
+              usesDispositions="true"
+              version="7">
+              <properties>
+                <property dataType="System.Int32" description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out." name="CommandTimeout">0</property>
+                <property dataType="System.String" description="Specifies the name of the database object used to open a rowset." name="OpenRowset"></property>
+                <property dataType="System.String" description="Specifies the variable that contains the name of the database object used to open a rowset." name="OpenRowsetVariable"></property>
+                <property dataType="System.String" description="The SQL command to be executed." name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT 
+    oi.order_id, 
+    oi.order_item_id, 
+    o.customer_id, 
+    oi.product_id, 
+    oi.seller_id, 
+    CAST(CONVERT(VARCHAR(8), o.order_purchase_timestamp, 112) AS INT) AS DateKey, 
+    oi.price, 
+    oi.freight_value, 
+    (oi.price + oi.freight_value) AS TotalOrderValue, 
+    DATEDIFF(day, o.order_purchase_timestamp, o.order_delivered_customer_date) AS DeliveryTimeDays 
+FROM dbo.olist_orders_dataset o 
+INNER JOIN dbo.olist_order_items_dataset oi ON o.order_id = oi.order_id 
+WHERE o.order_status = 'delivered' AND o.order_delivered_customer_date IS NOT NULL</property>
+                <property dataType="System.String" description="The variable that contains the SQL command to be executed." name="SqlCommandVariable"></property>
+                <property dataType="System.Int32" description="Specifies the column code page to use when code page information is unavailable from the data source." name="DefaultCodePage">1252</property>
+                <property dataType="System.Boolean" description="Forces the use of the DefaultCodePage property value when describing character data." name="AlwaysUseDefaultCodePage">false</property>
+                <property dataType="System.Int32" description="Specifies the mode used to access the database." name="AccessMode" typeConverter="AccessMode">2</property>
+                <property dataType="System.String" description="The mappings between the parameters in the SQL command and variables." name="ParameterMapping"></property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Load_Fact_Orders\OLE DB Source.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[Olist_OLTP]"
+                  connectionManagerRefId="Package.ConnectionManagers[Olist_OLTP]"
+                  description="The OLE DB runtime connection used to access the database."
+                  name="OleDbConnection" />
+              </connections>
+              <outputs>
+                <output
+                  refId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output]"
+                  name="OLE DB Source Output">
+                  <externalMetadataColumns isUsed="False" />
+                </output>
+              </outputs>
+            </component>
+
+            <!-- Customer Lookup -->
+            <component
               refId="Package\Load_Fact_Orders\Customer Lookup"
               componentClassID="Microsoft.Lookup"
               contactInfo="Lookup;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;"
@@ -343,21 +357,24 @@
               usesDispositions="true"
               version="6">
               <properties>
-                <property
-                  dataType="System.String"
-                  description="SqlCommand"
-                  name="SqlCommand">SELECT CustomerSK, CustomerBK FROM [dbo].[Dim_Customer]</property>
-                <property
-                  dataType="System.Int32"
-                  description="NoMatchBehavior"
-                  name="NoMatchBehavior"
-                  typeConverter="NoMatchBehavior">0</property>
+                <property dataType="System.String" description="Specifies the SQL statement that generates the lookup table." expressionType="Notify" name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT CustomerSK, customer_id FROM dbo.Dim_Customer</property>
+                <property dataType="System.String" description="Specifies a SQL statement that uses parameters to generate the lookup table." expressionType="Notify" name="SqlCommandParam" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT CustomerSK, customer_id FROM dbo.Dim_Customer WHERE customer_id = ?</property>
+                <property dataType="System.Int32" description="Specifies the type of connection used to access the reference dataset." name="ConnectionType" typeConverter="LookupConnectionType">0</property>
+                <property dataType="System.Int32" description="Specifies the cache type of the lookup table." name="CacheType" typeConverter="CacheType">0</property>
+                <property dataType="System.Int32" description="Specifies how the Lookup transformation handles rows without matching entries in the reference data set." name="NoMatchBehavior" typeConverter="LookupNoMatchBehavior">0</property>
+                <property dataType="System.Int32" description="Specifies the percentage of the cache that is allocated for rows with no matching entries in the reference dataset." name="NoMatchCachePercentage">0</property>
+                <property dataType="System.Int32" description="Maximum Memory Usage for Reference Cache on a 32 bit platform." name="MaxMemoryUsage">25</property>
+                <property dataType="System.Int64" description="Maximum Memory Usage for Reference Cache on a 64 bit platform." name="MaxMemoryUsage64">25</property>
+                <property dataType="System.String" description="Indicates whether to reference metadata in an XML format." name="ReferenceMetadataXml">&lt;referenceMetadata&gt;&lt;referenceColumns&gt;&lt;referenceColumn name="CustomerSK" dataType="DT_I4" length="0" precision="0" scale="0" codePage="0"/&gt;&lt;referenceColumn name="customer_id" dataType="DT_STR" length="50" precision="0" scale="0" codePage="1252"/&gt;&lt;/referenceColumns&gt;&lt;/referenceMetadata&gt;</property>
+                <property dataType="System.Int32" description="Specifies the column code page to use when code page information is unavailable from the data source." name="DefaultCodePage">1252</property>
+                <property dataType="System.Boolean" description="Determines whether duplicate keys in the reference data should be treated as errors when full cache mode is used." name="TreatDuplicateKeysAsError">false</property>
               </properties>
               <connections>
                 <connection
                   refId="Package\Load_Fact_Orders\Customer Lookup.Connections[OleDbConnection]"
                   connectionManagerID="Package.ConnectionManagers[Olist_DW]"
                   connectionManagerRefId="Package.ConnectionManagers[Olist_DW]"
+                  description="The OLE DB runtime connection used to access the database."
                   name="OleDbConnection" />
               </connections>
               <inputs>
@@ -370,61 +387,15 @@
               <outputs>
                 <output
                   refId="Package\Load_Fact_Orders\Customer Lookup.Outputs[Lookup Match Output]"
-                  errorOrTruncationOperation="Lookup"
-                  errorRowDisposition="IgnoreFailure"
                   exclusionGroup="1"
                   name="Lookup Match Output"
                   synchronousInputId="Package\Load_Fact_Orders\Customer Lookup.Inputs[Lookup Input]">
                   <externalMetadataColumns />
                 </output>
-                <output
-                  refId="Package\Load_Fact_Orders\Customer Lookup.Outputs[Lookup No Match Output]"
-                  description="The Lookup output that handles rows with no matching entries in the reference dataset."
-                  exclusionGroup="1"
-                  name="Lookup No Match Output"
-                  synchronousInputId="Package\Load_Fact_Orders\Customer Lookup.Inputs[Lookup Input]">
-                  <externalMetadataColumns />
-                </output>
               </outputs>
             </component>
-            <component
-              refId="Package\Load_Fact_Orders\OLE DB Source"
-              componentClassID="Microsoft.OLEDBSource"
-              contactInfo="OLE DB Source;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;"
-              description="OLE DB Source - Delivered Orders Extraction"
-              name="OLE DB Source"
-              usesDispositions="true"
-              version="7">
-              <properties>
-                <property
-                  dataType="System.Int32"
-                  description="Command timeout"
-                  name="CommandTimeout">0</property>
-                <property
-                  dataType="System.String"
-                  description="SqlCommand"
-                  name="SqlCommand">SELECT o.order_id, oi.order_item_id, o.customer_id, oi.product_id, oi.seller_id, CONVERT(INT, CONVERT(VARCHAR(8), o.order_purchase_timestamp, 112)) AS DateKey, oi.price, oi.freight_value, (oi.price + oi.freight_value) AS TotalOrderValue, DATEDIFF(day, o.order_purchase_timestamp, o.order_delivered_customer_date) AS DeliveryTimeDays FROM olist_orders_dataset o JOIN olist_order_items_dataset oi ON o.order_id = oi.order_id WHERE o.order_status = 'delivered';</property>
-                <property
-                  dataType="System.Int32"
-                  description="AccessMode"
-                  name="AccessMode"
-                  typeConverter="AccessMode">2</property>
-              </properties>
-              <connections>
-                <connection
-                  refId="Package\Load_Fact_Orders\OLE DB Source.Connections[OleDbConnection]"
-                  connectionManagerID="Package.ConnectionManagers[Olist_OLTP]"
-                  connectionManagerRefId="Package.ConnectionManagers[Olist_OLTP]"
-                  name="OleDbConnection" />
-              </connections>
-              <outputs>
-                <output
-                  refId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output]"
-                  name="OLE DB Source Output">
-                  <externalMetadataColumns />
-                </output>
-              </outputs>
-            </component>
+
+            <!-- Product Lookup -->
             <component
               refId="Package\Load_Fact_Orders\Product Lookup"
               componentClassID="Microsoft.Lookup"
@@ -434,21 +405,24 @@
               usesDispositions="true"
               version="6">
               <properties>
-                <property
-                  dataType="System.String"
-                  description="SqlCommand"
-                  name="SqlCommand">SELECT ProductSK, ProductBK FROM [dbo].[Dim_Product]</property>
-                <property
-                  dataType="System.Int32"
-                  description="NoMatchBehavior"
-                  name="NoMatchBehavior"
-                  typeConverter="NoMatchBehavior">0</property>
+                <property dataType="System.String" description="Specifies the SQL statement that generates the lookup table." expressionType="Notify" name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT ProductSK, product_id FROM dbo.Dim_Product</property>
+                <property dataType="System.String" description="Specifies a SQL statement that uses parameters to generate the lookup table." expressionType="Notify" name="SqlCommandParam" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT ProductSK, product_id FROM dbo.Dim_Product WHERE product_id = ?</property>
+                <property dataType="System.Int32" description="Specifies the type of connection used to access the reference dataset." name="ConnectionType" typeConverter="LookupConnectionType">0</property>
+                <property dataType="System.Int32" description="Specifies the cache type of the lookup table." name="CacheType" typeConverter="CacheType">0</property>
+                <property dataType="System.Int32" description="Specifies how the Lookup transformation handles rows without matching entries in the reference data set." name="NoMatchBehavior" typeConverter="LookupNoMatchBehavior">0</property>
+                <property dataType="System.Int32" description="Specifies the percentage of the cache that is allocated for rows with no matching entries in the reference dataset." name="NoMatchCachePercentage">0</property>
+                <property dataType="System.Int32" description="Maximum Memory Usage for Reference Cache on a 32 bit platform." name="MaxMemoryUsage">25</property>
+                <property dataType="System.Int64" description="Maximum Memory Usage for Reference Cache on a 64 bit platform." name="MaxMemoryUsage64">25</property>
+                <property dataType="System.String" description="Indicates whether to reference metadata in an XML format." name="ReferenceMetadataXml">&lt;referenceMetadata&gt;&lt;referenceColumns&gt;&lt;referenceColumn name="ProductSK" dataType="DT_I4" length="0" precision="0" scale="0" codePage="0"/&gt;&lt;referenceColumn name="product_id" dataType="DT_STR" length="50" precision="0" scale="0" codePage="1252"/&gt;&lt;/referenceColumns&gt;&lt;/referenceMetadata&gt;</property>
+                <property dataType="System.Int32" description="Specifies the column code page to use when code page information is unavailable from the data source." name="DefaultCodePage">1252</property>
+                <property dataType="System.Boolean" description="Determines whether duplicate keys in the reference data should be treated as errors when full cache mode is used." name="TreatDuplicateKeysAsError">false</property>
               </properties>
               <connections>
                 <connection
                   refId="Package\Load_Fact_Orders\Product Lookup.Connections[OleDbConnection]"
                   connectionManagerID="Package.ConnectionManagers[Olist_DW]"
                   connectionManagerRefId="Package.ConnectionManagers[Olist_DW]"
+                  description="The OLE DB runtime connection used to access the database."
                   name="OleDbConnection" />
               </connections>
               <inputs>
@@ -461,22 +435,15 @@
               <outputs>
                 <output
                   refId="Package\Load_Fact_Orders\Product Lookup.Outputs[Lookup Match Output]"
-                  errorOrTruncationOperation="Lookup"
-                  errorRowDisposition="IgnoreFailure"
                   exclusionGroup="1"
                   name="Lookup Match Output"
                   synchronousInputId="Package\Load_Fact_Orders\Product Lookup.Inputs[Lookup Input]">
                   <externalMetadataColumns />
                 </output>
-                <output
-                  refId="Package\Load_Fact_Orders\Product Lookup.Outputs[Lookup No Match Output]"
-                  exclusionGroup="1"
-                  name="Lookup No Match Output"
-                  synchronousInputId="Package\Load_Fact_Orders\Product Lookup.Inputs[Lookup Input]">
-                  <externalMetadataColumns />
-                </output>
               </outputs>
             </component>
+
+            <!-- Seller Lookup with Ignore Failure -->
             <component
               refId="Package\Load_Fact_Orders\Seller Lookup"
               componentClassID="Microsoft.Lookup"
@@ -484,8 +451,110 @@
               description="Lookup SellerSK from Dim_Seller with Ignore Failure"
               name="Seller Lookup"
               usesDispositions="true"
-              version="6" />
+              version="6">
+              <properties>
+                <property dataType="System.String" description="Specifies the SQL statement that generates the lookup table." expressionType="Notify" name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT SellerSK, seller_id FROM dbo.Dim_Seller</property>
+                <property dataType="System.String" description="Specifies a SQL statement that uses parameters to generate the lookup table." expressionType="Notify" name="SqlCommandParam" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT SellerSK, seller_id FROM dbo.Dim_Seller WHERE seller_id = ?</property>
+                <property dataType="System.Int32" description="Specifies the type of connection used to access the reference dataset." name="ConnectionType" typeConverter="LookupConnectionType">0</property>
+                <property dataType="System.Int32" description="Specifies the cache type of the lookup table." name="CacheType" typeConverter="CacheType">0</property>
+                <property dataType="System.Int32" description="Specifies how the Lookup transformation handles rows without matching entries in the reference data set." name="NoMatchBehavior" typeConverter="LookupNoMatchBehavior">1</property>
+                <property dataType="System.Int32" description="Specifies the percentage of the cache that is allocated for rows with no matching entries in the reference dataset." name="NoMatchCachePercentage">0</property>
+                <property dataType="System.Int32" description="Maximum Memory Usage for Reference Cache on a 32 bit platform." name="MaxMemoryUsage">25</property>
+                <property dataType="System.Int64" description="Maximum Memory Usage for Reference Cache on a 64 bit platform." name="MaxMemoryUsage64">25</property>
+                <property dataType="System.String" description="Indicates whether to reference metadata in an XML format." name="ReferenceMetadataXml">&lt;referenceMetadata&gt;&lt;referenceColumns&gt;&lt;referenceColumn name="SellerSK" dataType="DT_I4" length="0" precision="0" scale="0" codePage="0"/&gt;&lt;referenceColumn name="seller_id" dataType="DT_STR" length="50" precision="0" scale="0" codePage="1252"/&gt;&lt;/referenceColumns&gt;&lt;/referenceMetadata&gt;</property>
+                <property dataType="System.Int32" description="Specifies the column code page to use when code page information is unavailable from the data source." name="DefaultCodePage">1252</property>
+                <property dataType="System.Boolean" description="Determines whether duplicate keys in the reference data should be treated as errors when full cache mode is used." name="TreatDuplicateKeysAsError">false</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Load_Fact_Orders\Seller Lookup.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[Olist_DW]"
+                  connectionManagerRefId="Package.ConnectionManagers[Olist_DW]"
+                  description="The OLE DB runtime connection used to access the database."
+                  name="OleDbConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\Load_Fact_Orders\Seller Lookup.Inputs[Lookup Input]"
+                  name="Lookup Input">
+                  <externalMetadataColumns />
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\Load_Fact_Orders\Seller Lookup.Outputs[Lookup Match Output]"
+                  exclusionGroup="1"
+                  name="Lookup Match Output"
+                  synchronousInputId="Package\Load_Fact_Orders\Seller Lookup.Inputs[Lookup Input]">
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+
+            <!-- Fact Destination -->
+            <component
+              refId="Package\Load_Fact_Orders\OLE DB Destination"
+              componentClassID="Microsoft.OLEDBDestination"
+              contactInfo="OLE DB Destination;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;"
+              description="Loads completed orders into Fact_Orders"
+              name="OLE DB Destination"
+              usesDispositions="true"
+              version="4">
+              <properties>
+                <property dataType="System.Int32" description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out." name="CommandTimeout">0</property>
+                <property dataType="System.String" description="Specifies the name of the database object used to open a rowset." name="OpenRowset">[dbo].[Fact_Orders]</property>
+                <property dataType="System.String" description="Specifies the variable that contains the name of the database object used to open a rowset." name="OpenRowsetVariable"></property>
+                <property dataType="System.String" description="The SQL command to be executed." name="SqlCommand" UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
+                <property dataType="System.Int32" description="Specifies the column code page to use when code page information is unavailable from the data source." name="DefaultCodePage">1252</property>
+                <property dataType="System.Boolean" description="Forces the use of the DefaultCodePage property value when describing character data." name="AlwaysUseDefaultCodePage">false</property>
+                <property dataType="System.Int32" description="Specifies the mode used to access the database." name="AccessMode" typeConverter="AccessMode">3</property>
+                <property dataType="System.Boolean" description="Indicates whether the values supplied for identity columns will be copied to the destination." name="FastLoadKeepIdentity">false</property>
+                <property dataType="System.Boolean" description="Indicates whether the columns containing null will have null inserted in the destination." name="FastLoadKeepNulls">false</property>
+                <property dataType="System.String" description="Specifies options to be used with fast load." name="FastLoadOptions">TABLOCK,CHECK_CONSTRAINTS</property>
+                <property dataType="System.Int32" description="Specifies when commits are issued during data insertion." name="FastLoadMaxInsertCommitSize">2147483647</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Load_Fact_Orders\OLE DB Destination.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[Olist_DW]"
+                  connectionManagerRefId="Package.ConnectionManagers[Olist_DW]"
+                  description="The OLE DB runtime connection used to access the database."
+                  name="OleDbConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\Load_Fact_Orders\OLE DB Destination.Inputs[OLE DB Destination Input]"
+                  errorOrTruncationOperation="Insert"
+                  errorRowDisposition="FailComponent"
+                  hasSideEffects="true"
+                  name="OLE DB Destination Input">
+                  <externalMetadataColumns isUsed="False" />
+                </input>
+              </inputs>
+            </component>
           </components>
+          <paths>
+            <path
+              refId="Package\Load_Fact_Orders.Paths[OLE DB Source Output]"
+              endId="Package\Load_Fact_Orders\Customer Lookup.Inputs[Lookup Input]"
+              name="OLE DB Source Output"
+              startId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output]" />
+            <path
+              refId="Package\Load_Fact_Orders.Paths[Customer Match Output]"
+              endId="Package\Load_Fact_Orders\Product Lookup.Inputs[Lookup Input]"
+              name="Customer Match Output"
+              startId="Package\Load_Fact_Orders\Customer Lookup.Outputs[Lookup Match Output]" />
+            <path
+              refId="Package\Load_Fact_Orders.Paths[Product Match Output]"
+              endId="Package\Load_Fact_Orders\Seller Lookup.Inputs[Lookup Input]"
+              name="Product Match Output"
+              startId="Package\Load_Fact_Orders\Product Lookup.Outputs[Lookup Match Output]" />
+            <path
+              refId="Package\Load_Fact_Orders.Paths[Seller Match Output]"
+              endId="Package\Load_Fact_Orders\OLE DB Destination.Inputs[OLE DB Destination Input]"
+              name="Seller Match Output"
+              startId="Package\Load_Fact_Orders\Seller Lookup.Outputs[Lookup Match Output]" />
+          </paths>
         </pipeline>
       </DTS:ObjectData>
     </DTS:Executable>
@@ -509,12 +578,8 @@
       DTS:To="Package\Load_Fact_Orders" />
   </DTS:PrecedenceConstraints>
   <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
-<!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
-<!--If you manually edit this section and make a mistake, you can delete it. -->
-<!--The package will still be able to load normally but the previous layout information will be lost and the designer will automatically re-arrange the elements on the design surface.-->
 <Objects
   Version="8">
-  <!--Each node below will contain properties that do not affect runtime behavior.-->
   <Package
     design-time-name="Package">
     <LayoutInfo>
@@ -603,43 +668,5 @@
       </GraphLayout>
     </LayoutInfo>
   </Package>
-  <TaskHost
-    design-time-name="Package\Load_Dim_Customer">
-    <LayoutInfo>
-      <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
-        <NodeLayout
-          Size="150,42"
-          Id="Package\Load_Dim_Customer\OLE DB Source"
-          TopLeft="16,5.5" />
-        <NodeLayout
-          Size="171,42"
-          Id="Package\Load_Dim_Customer\OLE DB Destination"
-          TopLeft="5.50000000000001,107.5" />
-        <EdgeLayout
-          Id="Package\Load_Dim_Customer.Paths[OLE DB Source Output]"
-          TopLeft="91,47.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,60"
-              Start="0,0"
-              End="0,52.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,52.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-      </GraphLayout>
-    </LayoutInfo>
-  </TaskHost>
 </Objects>]]></DTS:DesignTimeProperties>
 </DTS:Executable>
