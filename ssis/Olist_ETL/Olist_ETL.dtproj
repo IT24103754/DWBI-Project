@@ -1,28 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <ProductVersion>16.0.5035.3</ProductVersion>
-  <SchemaVersion>9.0</SchemaVersion>
-  <Database xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-    <Name>Olist_ETL</Name>
-    <Packages>
-      <Package>
-        <Name>Package.dtsx</Name>
-        <FullPath>Package.dtsx</FullPath>
-      </Package>
-    </Packages>
-    <ConnectionManagers>
-      <ConnectionManager>
-        <Name>Olist_OLTP.conmgr</Name>
-        <FullPath>Olist_OLTP.conmgr</FullPath>
-      </ConnectionManager>
-      <ConnectionManager>
-        <Name>Olist_DW.conmgr</Name>
-        <FullPath>Olist_DW.conmgr</FullPath>
-      </ConnectionManager>
-      <ConnectionManager>
-        <Name>Products_CSV.conmgr</Name>
-        <FullPath>Products_CSV.conmgr</FullPath>
-      </ConnectionManager>
-    </ConnectionManagers>
+<Project xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <DeploymentModel>Project</DeploymentModel>
+  <ProductVersion>17.0.1016.0</ProductVersion>
+  <SchemaVersion>9.0.1.0</SchemaVersion>
+  <Database>
+    <Name>Olist_ETL.database</Name>
+    <FullPath>Olist_ETL.database</FullPath>
   </Database>
+  <DataSources />
+  <DataSourceViews />
+  <DeploymentModelSpecificContent>
+    <Manifest>
+      <SSIS:Project SSIS:ProtectionLevel="DontSaveSensitive" xmlns:SSIS="www.microsoft.com/SqlServer/SSIS">
+        <SSIS:Properties>
+          <SSIS:Property SSIS:Name="ID">{7314ddbc-9a1b-4be2-91ff-333a0be87f8a}</SSIS:Property>
+          <SSIS:Property SSIS:Name="Name">Olist_ETL</SSIS:Property>
+          <SSIS:Property SSIS:Name="VersionMajor">1</SSIS:Property>
+          <SSIS:Property SSIS:Name="VersionMinor">0</SSIS:Property>
+          <SSIS:Property SSIS:Name="VersionBuild">0</SSIS:Property>
+          <SSIS:Property SSIS:Name="VersionComments"></SSIS:Property>
+          <SSIS:Property SSIS:Name="CreationDate">2026-09-30T10:00:00</SSIS:Property>
+          <SSIS:Property SSIS:Name="CreatorName">ACER\thuva</SSIS:Property>
+          <SSIS:Property SSIS:Name="CreatorComputerName">ACER</SSIS:Property>
+          <SSIS:Property SSIS:Name="Description"></SSIS:Property>
+          <SSIS:Property SSIS:Name="FormatVersion">1</SSIS:Property>
+        </SSIS:Properties>
+        <SSIS:Packages>
+          <SSIS:Package SSIS:Name="Package.dtsx" SSIS:EntryPoint="1" />
+        </SSIS:Packages>
+        <SSIS:ConnectionManagers />
+        <SSIS:DeploymentInfo>
+          <SSIS:ProjectConnectionParameters />
+          <SSIS:PackageInfo>
+            <SSIS:PackageMetaData SSIS:Name="Package.dtsx">
+              <SSIS:Properties>
+                <SSIS:Property SSIS:Name="ID">{7DBD5534-B5B6-4FB3-97DC-E3AFFA12EBB3}</SSIS:Property>
+                <SSIS:Property SSIS:Name="Name">Package</SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionMajor">1</SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionMinor">0</SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionBuild">0</SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionComments"></SSIS:Property>
+                <SSIS:Property SSIS:Name="VersionGUID">{A9939191-603C-43A1-A037-5D8A7A35B798}</SSIS:Property>
+                <SSIS:Property SSIS:Name="PackageFormatVersion">8</SSIS:Property>
+                <SSIS:Property SSIS:Name="Description"></SSIS:Property>
+                <SSIS:Property SSIS:Name="ProtectionLevel">1</SSIS:Property>
+              </SSIS:Properties>
+              <SSIS:Parameters />
+            </SSIS:PackageMetaData>
+          </SSIS:PackageInfo>
+        </SSIS:DeploymentInfo>
+      </SSIS:Project>
+    </Manifest>
+  </DeploymentModelSpecificContent>
+  <ControlFlowParts />
+  <Miscellaneous />
+  <Configurations>
+    <Configuration>
+      <Name>Development</Name>
+      <Options>
+        <OutputPath>bin</OutputPath>
+        <ConnectionMappings />
+        <ConnectionProviderMappings />
+        <ConnectionSecurityMappings />
+        <DatabaseStorageLocations />
+        <TargetServerVersion>SQLServer2025</TargetServerVersion>
+        <AzureMode>false</AzureMode>
+        <LinkedAzureTenantId />
+        <LinkedAzureAccountId />
+        <LinkedAzureSSISIR />
+        <LinkedAzureStorage />
+        <RemoteExecutionFolder />
+        <ParameterConfigurationValues />
+      </Options>
+    </Configuration>
+  </Configurations>
 </Project>

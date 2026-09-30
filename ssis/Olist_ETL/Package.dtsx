@@ -1,22 +1,23 @@
 <?xml version="1.0"?>
 <DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
   DTS:refId="Package"
-  DTS:CreationDate="2026-09-30T10:00:00Z"
-  DTS:CreatorName="Antigravity"
-  DTS:DTSID="{D6635076-28FA-43F1-9F97-0D7EDD1F2954}"
+  DTS:CreationDate="9/30/2026 8:52:16 AM"
+  DTS:CreationName="Microsoft.Package"
+  DTS:CreatorComputerName="ACER"
+  DTS:CreatorName="ACER\thuva"
+  DTS:DTSID="{7DBD5534-B5B6-4FB3-97DC-E3AFFA12EBB3}"
   DTS:ExecutableType="Microsoft.Package"
-  DTS:LastModifiedProductVersion="16.0.5035.3"
+  DTS:LastModifiedProductVersion="17.0.1016.0"
   DTS:LocaleID="1033"
   DTS:ObjectName="Package"
   DTS:PackageType="5"
-  DTS:VersionBuild="1"
-  DTS:VersionGUID="{ABD4D8E6-A2DB-4153-A890-A1B567EAB1D0}">
+  DTS:VersionGUID="{A9939191-603C-43A1-A037-5D8A7A35B798}">
   <DTS:Property DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
     <DTS:ConnectionManager
       DTS:refId="Package.ConnectionManagers[Olist_OLTP]"
       DTS:CreationName="OLEDB"
-      DTS:DTSID="{FE4E46FF-B327-4F59-8E9F-825770B70855}"
+      DTS:DTSID="{7E9D9346-6D3E-4B07-B45A-8EF1E2C04D81}"
       DTS:ObjectName="Olist_OLTP">
       <DTS:ObjectData>
         <DTS:ConnectionManager
@@ -26,7 +27,7 @@
     <DTS:ConnectionManager
       DTS:refId="Package.ConnectionManagers[Olist_DW]"
       DTS:CreationName="OLEDB"
-      DTS:DTSID="{B3BA7CC0-2756-479B-874D-59157BC4C082}"
+      DTS:DTSID="{9C623C6D-5509-4C51-B9D7-BE480D9F0A3E}"
       DTS:ObjectName="Olist_DW">
       <DTS:ObjectData>
         <DTS:ConnectionManager
@@ -36,7 +37,7 @@
     <DTS:ConnectionManager
       DTS:refId="Package.ConnectionManagers[Products_CSV]"
       DTS:CreationName="FLATFILE"
-      DTS:DTSID="{24B63177-DB9E-4701-8170-4194E4422BED}"
+      DTS:DTSID="{47A46B55-5B26-444F-A299-8260D0CD47F5}"
       DTS:ObjectName="Products_CSV">
       <DTS:ObjectData>
         <DTS:ConnectionManager
@@ -55,12 +56,12 @@
     <DTS:Executable
       DTS:refId="Package\Load_Dim_Customer"
       DTS:CreationName="Microsoft.Pipeline"
-      DTS:Description="Data Flow Task - Extracts Customers from Source and populates Dim_Customer with surrogate identity keys"
-      DTS:DTSID="{9A604F37-F46A-4C47-A3E9-86F1984AEA09}"
+      DTS:Description="Data Flow Task - Customer Ingestion"
+      DTS:DTSID="{A24B91E3-8821-4E8F-A332-6A15E8D291F0}"
       DTS:ExecutableType="Microsoft.Pipeline"
       DTS:LocaleID="-1"
       DTS:ObjectName="Load_Dim_Customer"
-      DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+      DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;">
       <DTS:Variables />
       <DTS:ObjectData>
         <pipeline version="1" />
@@ -69,12 +70,12 @@
     <DTS:Executable
       DTS:refId="Package\Load_Dim_Product"
       DTS:CreationName="Microsoft.Pipeline"
-      DTS:Description="Data Flow Task - Extracts Products CSV, applies Derived Column REPLACENULL transformation for missing values, and loads Dim_Product"
-      DTS:DTSID="{61A90D33-6128-4D24-8772-D4CE8957C4B9}"
+      DTS:Description="Data Flow Task - Product Ingestion with REPLACENULL"
+      DTS:DTSID="{B35C82F4-9932-5F9A-B443-7B26F9E3A201}"
       DTS:ExecutableType="Microsoft.Pipeline"
       DTS:LocaleID="-1"
       DTS:ObjectName="Load_Dim_Product"
-      DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+      DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;">
       <DTS:Variables />
       <DTS:ObjectData>
         <pipeline version="1" />
@@ -83,12 +84,12 @@
     <DTS:Executable
       DTS:refId="Package\Load_Fact_Orders"
       DTS:CreationName="Microsoft.Pipeline"
-      DTS:Description="Data Flow Task - Extracts delivered orders via SQL query, performs sequential Lookups on Customer, Product, and Seller with Ignore Failure, and loads Fact_Orders"
-      DTS:DTSID="{1CCAD257-4280-41BF-8B0B-4A8CE6D25B16}"
+      DTS:Description="Data Flow Task - Fact Ingestion with Lookups"
+      DTS:DTSID="{C46D93A5-AA43-6AAB-C554-8C370AF4B312}"
       DTS:ExecutableType="Microsoft.Pipeline"
       DTS:LocaleID="-1"
       DTS:ObjectName="Load_Fact_Orders"
-      DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+      DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;">
       <DTS:Variables />
       <DTS:ObjectData>
         <pipeline version="1" />
@@ -99,7 +100,7 @@
     <DTS:PrecedenceConstraint
       DTS:refId="Package.PrecedenceConstraints[Constraint_Customer_to_Product]"
       DTS:CreationName=""
-      DTS:DTSID="{C9B78411-9F20-46A3-B8B8-AFEE2F09EA10}"
+      DTS:DTSID="{D57EA4B6-BB54-7BBC-D665-9D481BA5C423}"
       DTS:From="Package\Load_Dim_Customer"
       DTS:LogicalAnd="True"
       DTS:ObjectName="Constraint_Customer_to_Product"
@@ -107,14 +108,13 @@
     <DTS:PrecedenceConstraint
       DTS:refId="Package.PrecedenceConstraints[Constraint_Product_to_Fact]"
       DTS:CreationName=""
-      DTS:DTSID="{4F44CE50-0096-49BE-9D2F-005926D10840}"
+      DTS:DTSID="{E68FB5C7-CC65-8CCD-E776-AE592CB6D534}"
       DTS:From="Package\Load_Dim_Product"
       DTS:LogicalAnd="True"
       DTS:ObjectName="Constraint_Product_to_Fact"
       DTS:To="Package\Load_Fact_Orders" />
   </DTS:PrecedenceConstraints>
   <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
-<!--Package layout information-->
 <GraphLayout xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
   <NodeLayout
     Size="195,42"
