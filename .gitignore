@@ -19,6 +19,7 @@ logs/
 ~$*
 *backup.pbix
 dwbi_project_extracted/
+fg_extracted/
 
 # Operating System Files
 Thumbs.db

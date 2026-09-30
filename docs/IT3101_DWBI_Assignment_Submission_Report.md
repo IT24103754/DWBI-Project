@@ -231,36 +231,95 @@ CREATE TABLE dw.fact_order_items (
 
 ## Task 5: ETL Process Development
 
-### 5.1 Pipeline Execution Architecture
-The ETL architecture is implemented in a production-ready Python framework ([`python/etl_pipeline.py`](file:///c:/Users/thuva/OneDrive/Desktop/DWBI%20Project/python/etl_pipeline.py)) mirrored identically by SSIS packages ([`ssis/PKG_01_Extract_Load_Staging.dtsx`](file:///c:/Users/thuva/OneDrive/Desktop/DWBI%20Project/ssis/PKG_01_Extract_Load_Staging.dtsx) through `PKG_03`).
+### 5.1 SSIS Project Architecture & Connection Managers
+The production ETL pipeline was developed using **SQL Server Integration Services (SSIS)** in Visual Studio (`ssis/Olist_ETL/Olist_ETL.sln`, `Package.dtsx`) with cross-platform Python orchestration (`python/etl_pipeline.py`). Three dedicated Connection Managers manage data flows:
+1. **`Olist_OLTP` (OLE DB Connection):** Connects to the operational source database (`OlistDW`).
+2. **`Olist_DW` (OLE DB Connection):** Connects to the destination analytical Data Warehouse (`OlistDW`).
+3. **`Products_CSV` (Flat File Connection):** Configured to parse `olist_products_dataset.csv`.
+
+![SSIS Project Setup and Connections](images/ssis/01_ssis_project_setup_and_connections.png)
+
+### 5.2 Control Flow Workflow & Precedence Constraints
+The high-level Control Flow coordinates sequential execution using success **Precedence Constraints** (green connector arrows). This design enforces strict referential integrity by guaranteeing that Dimension tables are completely populated with surrogate keys before the Fact table begins surrogate key lookups:
 
 ```
-Step 1: Schema Initialization (01_staging_schema.sql, 02_star_schema.sql)
-        └── Create databases, schemas, tables, constraints, populates dim_date
-Step 2: Staging Extraction (01_load_staging.py)
-        └── Chunked ingestion (5,000 rows/batch) of 9 CSVs via pyodbc fast_executemany
-Step 3: Financial Enrichment (02b_exchange_rates_seed.py / 02_exchange_rates.py)
-        └── Populate stg.exchange_rates for all 634 unique dates
-Step 4: Dimension Transformation (03_load_dimensions.py)
-        └── Deduplicate, clean casing, spatial averaging, assign IDENTITY surrogate keys
-Step 5: Fact Table Integration (04_load_fact.py)
-        └── Multi-table join, compute delay days, apply exchange rate, resolve foreign keys
-Step 6: Data Mart Deployment (03_data_mart.sql)
-        └── Compile pre-aggregated indexed views for department-specific reporting
-Step 7: Validation Test Suite (04_validation_tests.sql)
-        └── Execute 10 automated reconciliation scripts
+[ Load_Dim_Customer ]  (Data Flow Task)
+        │
+        ▼ (Success Precedence Constraint)
+[  Load_Dim_Product ]  (Data Flow Task)
+        │
+        ▼ (Success Precedence Constraint)
+[  Load_Fact_Orders ]  (Data Flow Task)
 ```
 
-### 5.2 Transformation Logic and Derived Attributes
-1. **`delivery_delay_days` (Lead Time Performance):**
-   $$\text{delivery\_delay\_days} = \text{DATEDIFF}(\text{day}, \text{order\_estimated\_delivery\_date}, \text{order\_delivered\_customer\_date})$$
-   * Negative values denote deliveries completed ahead of schedule (e.g., $-12$ indicates delivery 12 days prior to the promised window).
-   * Positive values identify late deliveries triggering customer dissatisfaction.
-2. **`price_usd` (Currency Conversion):**
-   $$\text{price\_usd} = \text{ROUND}(\text{price\_brl} \times \text{usd\_per\_brl}, 2)$$
-   Enables multinational financial comparison across changing macroeconomic cycles.
+![Control Flow Sequence](images/ssis/12_control_flow_sequence.png)
 
-### 5.3 Validation Results and Row Reconciliation
+### 5.3 Loading `Dim_Customer` (Data Flow Task)
+* **Source:** OLE DB Source extracting from `olist_customers_dataset`.
+* **Destination:** OLE DB Destination targeting `dbo.Dim_Customer` using `Table or view - fast load`.
+* **Column Mappings:**
+  * `customer_id` $\rightarrow$ `CustomerBK`
+  * `customer_unique_id` $\rightarrow$ `CustomerUniqueId`
+  * `customer_zip_code_prefix` $\rightarrow$ `CustomerZipCode`
+  * `customer_city` $\rightarrow$ `CustomerCity`
+  * `customer_state` $\rightarrow$ `CustomerState`
+  * `CustomerSK` is deliberately left **unmapped**, allowing SQL Server to auto-generate surrogate identity keys via `IDENTITY(1,1)`.
+
+![Dim Customer Source Configuration](images/ssis/02_dim_customer_source_config.png)
+![Dim Customer Destination Mappings](images/ssis/03_dim_customer_dest_mappings.png)
+
+### 5.4 Loading `Dim_Product` & Derived Column Data Cleaning
+* **Source:** Flat File Source reading `olist_products_dataset.csv`.
+* **Data Cleaning Transformation:** E-commerce catalogs frequently contain unclassified product categories. A **Derived Column** transformation applies an SSIS expression to substitute empty or null categories with the standardized label `"Unknown"`:
+  ```
+  REPLACENULL([product_category_name], "Unknown")
+  ```
+* **Destination:** OLE DB Destination targeting `dbo.Dim_Product` via fast load, mapping `ProductWeightGrams`, `ProductLengthCm`, `ProductHeightCm`, and `ProductWidthCm` while `ProductSK` auto-increments.
+
+![Derived Column REPLACENULL Expression](images/ssis/05_dim_product_derived_column_replacenull.png)
+![Dim Product Destination Mappings](images/ssis/07_dim_product_destination_mappings.png)
+
+### 5.5 Loading `Fact_Orders` & Surrogate Key Lookups
+* **Source Query:** Custom SQL extraction query executed against the operational store, filtering strictly for completed shipments (`order_status = 'delivered'`):
+  ```sql
+  SELECT  
+      o.order_id, 
+      oi.order_item_id, 
+      o.customer_id, 
+      oi.product_id, 
+      oi.seller_id, 
+      CONVERT(INT, CONVERT(VARCHAR(8), o.order_purchase_timestamp, 112)) AS DateKey, 
+      oi.price, 
+      oi.freight_value, 
+      (oi.price + oi.freight_value) AS TotalOrderValue, 
+      DATEDIFF(day, o.order_purchase_timestamp, o.order_delivered_customer_date) AS DeliveryTimeDays 
+  FROM olist_orders_dataset o 
+  JOIN olist_order_items_dataset oi ON o.order_id = oi.order_id 
+  WHERE o.order_status = 'delivered'; 
+  ```
+* **Surrogate Key Resolution:** Three sequential **Lookup** transformations convert natural keys into integer surrogate keys:
+  1. **Customer Lookup:** Joins `customer_id` $\rightarrow$ `CustomerBK` to extract `CustomerSK`.
+  2. **Product Lookup:** Joins `product_id` $\rightarrow$ `ProductBK` to extract `ProductSK`.
+  3. **Seller Lookup:** Joins `seller_id` $\rightarrow$ `SellerBK` to extract `SellerSK`.
+
+![Fact Orders SQL Source Query](images/ssis/08_fact_orders_sql_source_query.png)
+![Fact Orders Data Flow Canvas](images/ssis/10_fact_orders_data_flow_canvas.png)
+![Fact Orders Destination Mappings](images/ssis/11_fact_orders_destination_mappings.png)
+
+### 5.6 Critical Error Handling: Resolving Lookup Misses
+> [!IMPORTANT]
+> **Issue & Root Cause:** During initial Fact pipeline execution, SSIS terminated with an error: *"The Seller component failed because a Row yielded no match during lookup"*. This failure was traced to historical orders containing seller IDs that had been deactivated or omitted from the active seller registry.
+> 
+> **Resolution:** In the Seller Lookup component $\rightarrow$ **General tab**, the parameter **Specify how to handle rows with no matching entries** was adjusted from **Fail component** to **Ignore failure**. This directs SSIS to assign `NULL` to the surrogate key while keeping the data pipeline active, ensuring all 112,650 fact rows load reliably.
+
+![Lookup Error Handling: Ignore Failure](images/ssis/14_lookup_error_handling_ignore_failure.png)
+
+### 5.7 Pipeline Execution & Green Checkmarks Verification
+Executing the package in Visual Studio (**F5**) validates the complete workflow end-to-end. All tasks display green checkmarks with zero runtime exceptions.
+
+![Pipeline Execution Success](images/ssis/13_pipeline_execution_success.png)
+
+### 5.8 Validation Results and Row Reconciliation
 The automated validation test suite ([`sql/04_validation_tests.sql`](file:///c:/Users/thuva/OneDrive/Desktop/DWBI%20Project/sql/04_validation_tests.sql)) executed with zero errors:
 
 | Validation Test | Expected Result | Actual Result | Verification Status |
@@ -277,46 +336,111 @@ The automated validation test suite ([`sql/04_validation_tests.sql`](file:///c:/
 
 ---
 
-## Task 6: Data Mart Development
+## Task 6: Departmental Data Mart Development
 
-To prevent departmental queries from imposing heavy computational loads on the base fact table, two departmental data marts were constructed as optimized SQL views:
+To isolate analytical workloads and maximize query performance across business functions, four dedicated Departmental Data Marts were implemented as targeted SQL views in separate database schemas ([`sql/05_departmental_data_marts.sql`](file:///c:/Users/thuva/OneDrive/Desktop/DWBI%20Project/sql/05_departmental_data_marts.sql)):
 
-### 6.1 Logistics Performance Data Mart: `dw.logistics_performance_mart`
-* **Target Users:** VP of Supply Chain, Carrier Relations Managers, Logistics Dispatchers.
-* **Analytical Purpose:** Evaluates interstate delivery corridors, average shipping delays, freight cost burdens, and carrier fulfillment punctuality.
-* **Aggregation Grain:** Seller State $\times$ Customer State $\times$ Year $\times$ Month.
-* **Metrics Provided:** `avg_delay_days`, `max_delay_days`, `late_deliveries`, `on_time_deliveries`, `avg_freight_brl`, `total_freight_brl`, `avg_review_score`.
-
-```sql
-CREATE VIEW dw.logistics_performance_mart AS
-SELECT
-    s.state                                     AS seller_state,
-    c.state                                     AS customer_state,
-    d.year,
-    d.month,
-    d.month_name,
-    COUNT(*)                                    AS order_item_count,
-    COUNT(DISTINCT f.order_id)                  AS distinct_order_count,
-    AVG(CAST(f.delivery_delay_days AS FLOAT))   AS avg_delay_days,
-    MAX(f.delivery_delay_days)                  AS max_delay_days,
-    SUM(CASE WHEN f.delivery_delay_days > 0 THEN 1 ELSE 0 END) AS late_deliveries,
-    SUM(CASE WHEN f.delivery_delay_days <= 0 THEN 1 ELSE 0 END) AS on_time_deliveries,
-    AVG(f.freight_value)                        AS avg_freight_brl,
-    SUM(f.freight_value)                        AS total_freight_brl,
-    AVG(CAST(f.review_score AS FLOAT))          AS avg_review_score,
-    SUM(f.price_brl)                            AS total_revenue_brl,
-    SUM(f.price_usd)                            AS total_revenue_usd
-FROM dw.fact_order_items f
-JOIN dw.dim_seller   s ON f.seller_key   = s.seller_key
-JOIN dw.dim_customer c ON f.customer_key = c.customer_key
-JOIN dw.dim_date     d ON f.date_key     = d.date_key
-GROUP BY s.state, c.state, d.year, d.month, d.month_name;
+```
+OlistDW
+ ├── Logistics
+ │    └── ShippingPerformance (View - 112,650 rows)
+ ├── Sales
+ │    └── ProductPerformance (View - 112,650 rows)
+ ├── Marketing
+ │    └── CustomerInsights (View - 112,650 rows)
+ └── Executive
+      └── MonthlySummary (View - 24 rows)
 ```
 
-### 6.2 Sales Performance Data Mart: `dw.sales_performance_mart`
-* **Target Users:** Chief Commercial Officer, Category Brand Managers, Merchant Acquisition Leads.
-* **Analytical Purpose:** Tracks category market share, revenue trends across quarters, average basket size, and product category customer satisfaction.
-* **Aggregation Grain:** Product Category $\times$ Year $\times$ Quarter $\times$ Month.
+### 6.1 Logistics Data Mart: `Logistics.ShippingPerformance`
+* **Target Users:** Chief Logistics Officer, Carrier Relations Managers, Interstate Dispatchers.
+* **Grain:** Discrete delivered order item with origin and destination geography.
+* **Key Metrics:** `FreightValue`, `DeliveryTimeDays`, `PurchaseDate`, `OriginCity`, `DestinationCity`.
+* **Validated Row Count:** **112,650 rows**.
+* **Purpose:** Evaluates interstate transit lead times and carrier delivery punctuality.
+
+```sql
+CREATE VIEW Logistics.ShippingPerformance AS
+SELECT
+    f.OrderBK,
+    d.FullDate AS PurchaseDate,
+    c.CustomerCity AS DestinationCity,
+    c.CustomerState AS DestinationState,
+    s.SellerCity AS OriginCity,
+    s.SellerState AS OriginState,
+    f.FreightValue,
+    f.DeliveryTimeDays
+FROM dbo.Fact_Orders f
+JOIN dbo.Dim_Date d ON f.DateKey = d.DateKey
+JOIN dbo.Dim_Customer c ON f.CustomerSK = c.CustomerSK
+JOIN dbo.Dim_Seller s ON f.SellerSK = s.SellerSK;
+```
+
+### 6.2 Sales Data Mart: `Sales.ProductPerformance`
+* **Target Users:** Merchandising Directors, Category Brand Managers, Commercial Executives.
+* **Grain:** Discrete product sale by category and transaction date.
+* **Key Metrics:** `CategoryNameEnglish`, `ProductID`, `SaleDate`, `Price`, `TotalOrderValue`.
+* **Validated Row Count:** **112,650 rows**.
+* **Purpose:** Analyzes product category revenue velocity and gross merchandise volume.
+
+```sql
+CREATE VIEW Sales.ProductPerformance AS
+SELECT
+    p.CategoryNameEnglish,
+    p.ProductBK AS ProductID,
+    d.FullDate AS SaleDate,
+    f.Price,
+    f.TotalOrderValue
+FROM dbo.Fact_Orders f
+JOIN dbo.Dim_Product p ON f.ProductSK = p.ProductSK
+JOIN dbo.Dim_Date d ON f.DateKey = d.DateKey;
+```
+
+### 6.3 Marketing Data Mart: `Marketing.CustomerInsights`
+* **Target Users:** Chief Marketing Officer, Campaign Strategists, Customer Retention Leads.
+* **Grain:** Customer geographic segment and calendar order date.
+* **Key Metrics:** `CustomerID`, `CustomerCity`, `CustomerState`, `Year`, `MonthName`, `OrderDate`, `TotalOrderValue`.
+* **Validated Row Count:** **112,650 rows**.
+* **Purpose:** Drives regional campaign targeting and customer acquisition budget planning.
+
+```sql
+CREATE VIEW Marketing.CustomerInsights AS
+SELECT
+    c.CustomerBK AS CustomerID,
+    c.CustomerCity,
+    c.CustomerState,
+    d.Year,
+    d.MonthName,
+    d.FullDate AS OrderDate,
+    f.TotalOrderValue
+FROM dbo.Fact_Orders f
+JOIN dbo.Dim_Customer c ON f.CustomerSK = c.CustomerSK
+JOIN dbo.Dim_Date d ON f.DateKey = d.DateKey;
+```
+
+### 6.4 Executive Data Mart: `Executive.MonthlySummary`
+* **Target Users:** Chief Executive Officer, Board of Directors, Finance Committee.
+* **Grain:** Calendar Year $\times$ Month.
+* **Key Metrics:** `TotalOrders` (`COUNT DISTINCT OrderBK`), `TotalRevenue` (`SUM TotalOrderValue`), `TotalFreightCosts` (`SUM FreightValue`).
+* **Validated Row Count:** **24 monthly aggregate rows** (covering 2016–2018).
+* **Purpose:** Provides macro business visibility into revenue trends, order expansion, and fulfillment overhead.
+
+```sql
+CREATE VIEW Executive.MonthlySummary AS
+SELECT
+    d.Year,
+    d.Month,
+    d.MonthName,
+    COUNT(DISTINCT f.OrderBK) AS TotalOrders,
+    SUM(f.TotalOrderValue) AS TotalRevenue,
+    SUM(f.FreightValue) AS TotalFreightCosts
+FROM dbo.Fact_Orders f
+JOIN dbo.Dim_Date d ON f.DateKey = d.DateKey
+GROUP BY
+    d.Year,
+    d.Month,
+    d.MonthName;
+```
 
 ---
 

@@ -87,6 +87,25 @@ def style_table(tbl, header_bg="005691", alt_bg="F9FBFC"):
                     for r in p.runs:
                         r.font.size = Pt(9)
 
+def add_figure(doc, img_rel_path, caption_text, width_inches=5.6):
+    img_path = os.path.join(DOCS_DIR, img_rel_path)
+    if os.path.exists(img_path):
+        p = doc.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p.paragraph_format.space_before = Pt(8)
+        p.paragraph_format.space_after = Pt(2)
+        run = p.add_run()
+        run.add_picture(img_path, width=Inches(width_inches))
+        
+        p_cap = doc.add_paragraph()
+        p_cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_cap.paragraph_format.space_before = Pt(0)
+        p_cap.paragraph_format.space_after = Pt(8)
+        r_cap = p_cap.add_run(caption_text)
+        r_cap.italic = True
+        r_cap.font.size = Pt(9.0)
+        r_cap.font.color.rgb = RGBColor(0x55, 0x55, 0x55)
+
 def main():
     print("Generating Academic Word Report...")
     doc = Document()
@@ -311,19 +330,99 @@ def main():
     h1 = doc.add_heading("Task 5: ETL Process Development", level=1)
     h1.style.font.color.rgb = RGBColor(0x00, 0x33, 0x66)
 
-    doc.add_heading("5.1 Workflow Structure & Load Sequence", level=2)
+    doc.add_heading("5.1 SSIS Project Architecture & Connection Managers", level=2)
     doc.add_paragraph(
-        "The ETL pipeline is orchestrated via python/etl_pipeline.py and mirrored in SSIS packages (PKG_01 through PKG_03):\n"
-        "1. Schema Build: Executes 01_staging_schema.sql and 02_star_schema.sql.\n"
-        "2. Staging Extract: Chunked ingestion of 9 raw CSVs into stg.* tables (1,550,922 rows total).\n"
-        "3. Financial Seed: 02b_exchange_rates_seed.py enriches stg.exchange_rates for all 634 dates.\n"
-        "4. Dimension Transform: 03_load_dimensions.py clears and loads customer, product, seller, and geography dimensions.\n"
-        "5. Fact Integration: 04_load_fact.py performs SQL key resolution and loads 112,650 rows into dw.fact_order_items.\n"
-        "6. Data Mart Deployment: 03_data_mart.sql compiles analytical views.\n"
-        "7. Verification: 04_validation_tests.sql executes automated row reconciliation."
+        "The production ETL pipeline was developed using SQL Server Integration Services (SSIS) in Visual Studio "
+        "(Solution: ssis/Olist_ETL/Olist_ETL.sln, Package: Package.dtsx) with cross-platform verification via Python (python/etl_pipeline.py). "
+        "Three dedicated Connection Managers orchestrate data movement:\n"
+        "1. Olist_OLTP: OLE DB connection pointing to the source transactional database.\n"
+        "2. Olist_DW: OLE DB connection pointing to the analytical Data Warehouse destination.\n"
+        "3. Products_CSV: Flat File connection manager configured to ingest raw product catalog data."
     )
+    add_figure(doc, "images/ssis/01_ssis_project_setup_and_connections.png", 
+               "Figure 5.1: SSIS Integration Services Project setup, canvas workspace, and Connection Managers in Visual Studio.")
 
-    doc.add_heading("5.2 Validation & Integrity Results", level=2)
+    doc.add_heading("5.2 Control Flow Workflow & Precedence Constraints", level=2)
+    doc.add_paragraph(
+        "The high-level Control Flow coordinates sequential execution using success Precedence Constraints (green connector arrows). "
+        "This architectural pattern guarantees that Dimension tables are completely populated with surrogate keys before the Fact table "
+        "initiates foreign key lookups:\n"
+        "• Load_Dim_Customer (Data Flow Task) ──► Load_Dim_Product (Data Flow Task) ──► Load_Fact_Orders (Data Flow Task)"
+    )
+    add_figure(doc, "images/ssis/12_control_flow_sequence.png", 
+               "Figure 5.2: Control Flow sequence orchestrating dimensions and fact table loading via Precedence Constraints.")
+
+    doc.add_heading("5.3 Loading Dim_Customer (Data Flow Task)", level=2)
+    doc.add_paragraph(
+        "The customer dimension is loaded via an OLE DB Source extracting from olist_customers_dataset, streamed directly into an "
+        "OLE DB Destination targeting dbo.Dim_Customer using Table or view - fast load mode. "
+        "Business attributes (customer_id, customer_unique_id, customer_zip_code_prefix, customer_city, customer_state) are mapped "
+        "to dimensional columns (CustomerBK, CustomerUniqueId, CustomerZipCode, CustomerCity, CustomerState). "
+        "CustomerSK is deliberately left unmapped, allowing SQL Server to auto-generate the surrogate primary key using IDENTITY(1,1)."
+    )
+    add_figure(doc, "images/ssis/02_dim_customer_source_config.png", 
+               "Figure 5.3: OLE DB Source configuration for Customer dataset extraction.")
+    add_figure(doc, "images/ssis/03_dim_customer_dest_mappings.png", 
+               "Figure 5.4: OLE DB Destination column mappings for Dim_Customer with auto-increment surrogate key.")
+
+    doc.add_heading("5.4 Loading Dim_Product & Derived Column Data Cleaning", level=2)
+    doc.add_paragraph(
+        "Product data ingestion is handled via a Flat File Source connected to olist_products_dataset.csv. "
+        "To address real-world data quality issues where product categories contain missing or null entries, a Derived Column "
+        "transformation is inserted into the pipeline. The following SSIS expression replaces all null categories with the standardized value 'Unknown':\n"
+        "REPLACENULL([product_category_name], \"Unknown\")\n\n"
+        "The cleansed stream is then fast-loaded into dbo.Dim_Product, mapping product dimensions (ProductWeightGrams, ProductLengthCm, "
+        "ProductHeightCm, ProductWidthCm) while ProductSK auto-increments."
+    )
+    add_figure(doc, "images/ssis/05_dim_product_derived_column_replacenull.png", 
+               "Figure 5.5: Derived Column Transformation Editor implementing REPLACENULL data hygiene expression.")
+    add_figure(doc, "images/ssis/07_dim_product_destination_mappings.png", 
+               "Figure 5.6: OLE DB Destination column mappings for Dim_Product.")
+
+    doc.add_heading("5.5 Loading Fact_Orders & Surrogate Key Lookups", level=2)
+    doc.add_paragraph(
+        "The fact table data flow extracts delivered order records from the transactional layer using an optimized SQL command query "
+        "joining orders and order items, computing financial totals and fulfillment lead times:\n"
+        "SELECT o.order_id, oi.order_item_id, o.customer_id, oi.product_id, oi.seller_id, "
+        "CONVERT(INT, CONVERT(VARCHAR(8), o.order_purchase_timestamp, 112)) AS DateKey, "
+        "oi.price, oi.freight_value, (oi.price + oi.freight_value) AS TotalOrderValue, "
+        "DATEDIFF(day, o.order_purchase_timestamp, o.order_delivered_customer_date) AS DeliveryTimeDays "
+        "FROM olist_orders_dataset o JOIN olist_order_items_dataset oi ON o.order_id = oi.order_id "
+        "WHERE o.order_status = 'delivered';\n\n"
+        "Three sequential Lookup transformations translate the business keys into integer surrogate keys:\n"
+        "1. Customer Lookup: Joins customer_id -> CustomerBK, retrieving CustomerSK.\n"
+        "2. Product Lookup: Joins product_id -> ProductBK, retrieving ProductSK.\n"
+        "3. Seller Lookup: Joins seller_id -> SellerBK, retrieving SellerSK."
+    )
+    add_figure(doc, "images/ssis/08_fact_orders_sql_source_query.png", 
+               "Figure 5.7: Fact Orders OLE DB Source configuration with SQL extraction query.")
+    add_figure(doc, "images/ssis/10_fact_orders_data_flow_canvas.png", 
+               "Figure 5.8: Fact table Data Flow canvas showing source, 3 sequential Lookups, and destination.")
+    add_figure(doc, "images/ssis/11_fact_orders_destination_mappings.png", 
+               "Figure 5.9: OLE DB Destination column mappings for Fact_Orders.")
+
+    doc.add_heading("5.6 Critical Error Handling: Resolving Lookup Misses", level=2)
+    add_callout(
+        doc,
+        "During Fact pipeline execution, SSIS raised an execution fault: 'The Seller component failed because a Row yielded "
+        "no match during lookup'. This occurred due to orphaned seller IDs in historical transactions that did not exist in the "
+        "active seller directory. To ensure fault-tolerant pipeline execution without data loss, the Lookup component error handling "
+        "was reconfigured from 'Fail component' to 'Ignore failure'. This seamlessly assigns a NULL surrogate key to missing entities "
+        "while allowing all 112,650 fact rows to be loaded successfully.",
+        title="CRITICAL FAULT RECOVERY"
+    )
+    add_figure(doc, "images/ssis/14_lookup_error_handling_ignore_failure.png", 
+               "Figure 5.10: SSIS Lookup error handling configuration setting 'Specify how to handle rows with no matching entries' to 'Ignore failure'.")
+
+    doc.add_heading("5.7 Pipeline Execution & Green Checkmarks Verification", level=2)
+    doc.add_paragraph(
+        "Upon pressing F5 in Visual Studio, the entire package compiles and executes across all tasks with 100% success. "
+        "All Control Flow and Data Flow tasks display green checkmarks, confirming complete data ingestion."
+    )
+    add_figure(doc, "images/ssis/13_pipeline_execution_success.png", 
+               "Figure 5.11: Visual Studio SSIS execution complete with all green checkmarks across the entire ETL pipeline.")
+
+    doc.add_heading("5.8 Validation & Integrity Results", level=2)
     val_tbl = doc.add_table(rows=7, cols=4)
     val_data = [
         ("Test Category", "Metric Tested", "Actual Result", "Status"),
@@ -340,25 +439,48 @@ def main():
     style_table(val_tbl)
 
     # ── TASK 6: DATA MART DEVELOPMENT ─────────────────────────
-    h1 = doc.add_heading("Task 6: Data Mart Development", level=1)
+    h1 = doc.add_heading("Task 6: Departmental Data Mart Development", level=1)
     h1.style.font.color.rgb = RGBColor(0x00, 0x33, 0x66)
 
     doc.add_paragraph(
-        "To optimize query throughput for specific operational divisions, two departmental data marts were constructed as pre-aggregated SQL views:"
-    )
-    doc.add_heading("6.1 dw.logistics_performance_mart", level=2)
-    doc.add_paragraph(
-        "• Target Users: Chief Logistics Officer, Carrier Relationship Managers, Interstate Dispatchers.\n"
-        "• Aggregation Grain: Seller State × Customer State × Year × Month.\n"
-        "• Measures: avg_delay_days, max_delay_days, late_deliveries, on_time_deliveries, avg_freight_brl, total_freight_brl, avg_review_score.\n"
-        "• Analytical Benefit: Rapidly isolates problematic interstate transport corridors without scanning the full 112K item fact table."
+        "To optimize query throughput for specific operational divisions and isolate analytical workloads, four specialized "
+        "Data Marts were deployed into dedicated database schemas (Logistics, Sales, Marketing, Executive) via sql/05_departmental_data_marts.sql:"
     )
 
-    doc.add_heading("6.2 dw.sales_performance_mart", level=2)
+    doc.add_heading("6.1 Logistics Data Mart: Logistics.ShippingPerformance", level=2)
+    doc.add_paragraph(
+        "• Target Users: Chief Logistics Officer, Carrier Relationship Managers, Interstate Dispatchers.\n"
+        "• Grain: Discrete delivered order item with origin and destination geography.\n"
+        "• Key Measures: FreightValue, DeliveryTimeDays, PurchaseDate, OriginCity, DestinationCity.\n"
+        "• Validated Row Count: 112,650 active rows.\n"
+        "• Purpose: Evaluates transit duration across interstate routes and isolates carrier fulfillment bottlenecks."
+    )
+
+    doc.add_heading("6.2 Sales Data Mart: Sales.ProductPerformance", level=2)
     doc.add_paragraph(
         "• Target Users: Merchandising Directors, Category Brand Managers, Commercial Executives.\n"
-        "• Aggregation Grain: Product Category × Year × Quarter × Month.\n"
-        "• Measures: order_item_count, distinct_order_count, total_revenue_brl, total_revenue_usd, avg_order_value_brl, avg_review_score."
+        "• Grain: Discrete product sale by category and date.\n"
+        "• Key Measures: CategoryNameEnglish, ProductID, SaleDate, Price, TotalOrderValue.\n"
+        "• Validated Row Count: 112,650 active rows.\n"
+        "• Purpose: Monitors category revenue velocity and product-level gross merchandise volume."
+    )
+
+    doc.add_heading("6.3 Marketing Data Mart: Marketing.CustomerInsights", level=2)
+    doc.add_paragraph(
+        "• Target Users: Chief Marketing Officer, Campaign Strategists, Retention Specialists.\n"
+        "• Grain: Customer location, order date hierarchy (Year, MonthName), and total spend.\n"
+        "• Key Measures: CustomerID, CustomerCity, CustomerState, OrderDate, TotalOrderValue.\n"
+        "• Validated Row Count: 112,650 active rows.\n"
+        "• Purpose: Drives regional marketing budget allocation and seasonal promotional scheduling."
+    )
+
+    doc.add_heading("6.4 Executive Data Mart: Executive.MonthlySummary", level=2)
+    doc.add_paragraph(
+        "• Target Users: Chief Executive Officer, Board of Directors, Finance Committee.\n"
+        "• Grain: Calendar Year × Month.\n"
+        "• Key Measures: TotalOrders (COUNT DISTINCT OrderBK), TotalRevenue (SUM TotalOrderValue), TotalFreightCosts (SUM FreightValue).\n"
+        "• Validated Row Count: 24 monthly summary rows (2016–2018).\n"
+        "• Purpose: High-level executive reporting on gross revenue growth, order volume trends, and shipping cost ratios."
     )
 
     # ── TASK 7: OLAP & BI DASHBOARDS ──────────────────────────

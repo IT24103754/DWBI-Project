@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <ProductVersion>16.0.5035.3</ProductVersion>
+  <SchemaVersion>9.0</SchemaVersion>
+  <Database xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <Name>Olist_ETL</Name>
+    <Packages>
+      <Package>
+        <Name>Package.dtsx</Name>
+        <FullPath>Package.dtsx</FullPath>
+      </Package>
+    </Packages>
+    <ConnectionManagers>
+      <ConnectionManager>
+        <Name>Olist_OLTP.conmgr</Name>
+        <FullPath>Olist_OLTP.conmgr</FullPath>
+      </ConnectionManager>
+      <ConnectionManager>
+        <Name>Olist_DW.conmgr</Name>
+        <FullPath>Olist_DW.conmgr</FullPath>
+      </ConnectionManager>
+      <ConnectionManager>
+        <Name>Products_CSV.conmgr</Name>
+        <FullPath>Products_CSV.conmgr</FullPath>
+      </ConnectionManager>
+    </ConnectionManagers>
+  </Database>
+</Project>
