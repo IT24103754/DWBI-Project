@@ -1,10 +1,20 @@
-<?xml version="1.0"?>
+"""
+build_full_ssis_package.py
+Generates the complete Visual Studio SSIS package Package.dtsx with full
+Data Flow internal components (OLE DB Sources, Flat File Source, Derived Column,
+3 sequential Lookups, and OLE DB Destinations) with exact graphical layout.
+"""
+import os
+
+out_path = r"ssis\Olist_ETL\Package.dtsx"
+
+package_xml = '''<?xml version="1.0"?>
 <DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
   DTS:refId="Package"
   DTS:CreationDate="9/30/2026 8:52:16 AM"
   DTS:CreationName="Microsoft.Package"
   DTS:CreatorComputerName="ACER"
-  DTS:CreatorName="ACER\thuva"
+  DTS:CreatorName="ACER\\thuva"
   DTS:DTSID="{7DBD5534-B5B6-4FB3-97DC-E3AFFA12EBB3}"
   DTS:ExecutableType="Microsoft.Package"
   DTS:LastModifiedProductVersion="17.0.1016.0"
@@ -46,7 +56,7 @@
           DTS:HeaderRowDelimiter="_x000D__x000A_"
           DTS:ColumnNamesInFirstDataRow="True"
           DTS:RowDelimiter=""
-          DTS:ConnectionString="c:\Users\thuva\OneDrive\Desktop\DWBI Project\Dataset\olist_products_dataset.csv">
+          DTS:ConnectionString="c:\\Users\\thuva\\OneDrive\\Desktop\\DWBI Project\\Dataset\\olist_products_dataset.csv">
         </DTS:ConnectionManager>
       </DTS:ObjectData>
     </DTS:ConnectionManager>
@@ -57,7 +67,7 @@
     <!-- 1. DATA FLOW TASK: Load_Dim_Customer                                    -->
     <!-- ====================================================================== -->
     <DTS:Executable
-      DTS:refId="Package\Load_Dim_Customer"
+      DTS:refId="Package\\Load_Dim_Customer"
       DTS:CreationName="Microsoft.Pipeline"
       DTS:Description="Data Flow Task - Extracts Customers from Source and fast-loads Dim_Customer"
       DTS:DTSID="{A24B91E3-8821-4E8F-A332-6A15E8D291F0}"
@@ -70,7 +80,7 @@
         <pipeline version="1">
           <components>
             <component
-              refId="Package\Load_Dim_Customer\OLE DB Source"
+              refId="Package\\Load_Dim_Customer\\OLE DB Source"
               componentClassID="Microsoft.OLEDBSource"
               contactInfo="OLE DB Source;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;"
               description="OLE DB Source - olist_customers_dataset"
@@ -84,7 +94,7 @@
               </properties>
               <connections>
                 <connection
-                  refId="Package\Load_Dim_Customer\OLE DB Source.Connections[OleDbConnection]"
+                  refId="Package\\Load_Dim_Customer\\OLE DB Source.Connections[OleDbConnection]"
                   connectionManagerID="Package.ConnectionManagers[Olist_OLTP]"
                   connectionManagerRefId="Package.ConnectionManagers[Olist_OLTP]"
                   description="Source database connection"
@@ -92,14 +102,14 @@
               </connections>
               <outputs>
                 <output
-                  refId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Output]"
+                  refId="Package\\Load_Dim_Customer\\OLE DB Source.Outputs[OLE DB Source Output]"
                   name="OLE DB Source Output">
                   <externalMetadataColumns isUsed="False" />
                 </output>
               </outputs>
             </component>
             <component
-              refId="Package\Load_Dim_Customer\OLE DB Destination"
+              refId="Package\\Load_Dim_Customer\\OLE DB Destination"
               componentClassID="Microsoft.OLEDBDestination"
               contactInfo="OLE DB Destination;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;"
               description="OLE DB Destination - Dim_Customer"
@@ -116,7 +126,7 @@
               </properties>
               <connections>
                 <connection
-                  refId="Package\Load_Dim_Customer\OLE DB Destination.Connections[OleDbConnection]"
+                  refId="Package\\Load_Dim_Customer\\OLE DB Destination.Connections[OleDbConnection]"
                   connectionManagerID="Package.ConnectionManagers[Olist_DW]"
                   connectionManagerRefId="Package.ConnectionManagers[Olist_DW]"
                   description="Destination Data Warehouse connection"
@@ -124,7 +134,7 @@
               </connections>
               <inputs>
                 <input
-                  refId="Package\Load_Dim_Customer\OLE DB Destination.Inputs[OLE DB Destination Input]"
+                  refId="Package\\Load_Dim_Customer\\OLE DB Destination.Inputs[OLE DB Destination Input]"
                   errorOrTruncationOperation="Insert"
                   errorRowDisposition="FailComponent"
                   hasSideEffects="true"
@@ -136,10 +146,10 @@
           </components>
           <paths>
             <path
-              refId="Package\Load_Dim_Customer.Paths[OLE DB Source Output]"
-              endId="Package\Load_Dim_Customer\OLE DB Destination.Inputs[OLE DB Destination Input]"
+              refId="Package\\Load_Dim_Customer.Paths[OLE DB Source Output]"
+              endId="Package\\Load_Dim_Customer\\OLE DB Destination.Inputs[OLE DB Destination Input]"
               name="OLE DB Source Output"
-              startId="Package\Load_Dim_Customer\OLE DB Source.Outputs[OLE DB Source Output]" />
+              startId="Package\\Load_Dim_Customer\\OLE DB Source.Outputs[OLE DB Source Output]" />
           </paths>
         </pipeline>
       </DTS:ObjectData>
@@ -149,7 +159,7 @@
     <!-- 2. DATA FLOW TASK: Load_Dim_Product                                     -->
     <!-- ====================================================================== -->
     <DTS:Executable
-      DTS:refId="Package\Load_Dim_Product"
+      DTS:refId="Package\\Load_Dim_Product"
       DTS:CreationName="Microsoft.Pipeline"
       DTS:Description="Data Flow Task - Products CSV with Derived Column REPLACENULL"
       DTS:DTSID="{B35C82F4-9932-5F9A-B443-7B26F9E3A201}"
@@ -162,7 +172,7 @@
         <pipeline version="1">
           <components>
             <component
-              refId="Package\Load_Dim_Product\Flat File Source"
+              refId="Package\\Load_Dim_Product\\Flat File Source"
               componentClassID="Microsoft.FlatFileSource"
               contactInfo="Flat File Source;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;"
               description="Flat File Source - Products CSV"
@@ -173,21 +183,21 @@
               </properties>
               <connections>
                 <connection
-                  refId="Package\Load_Dim_Product\Flat File Source.Connections[FlatFileConnection]"
+                  refId="Package\\Load_Dim_Product\\Flat File Source.Connections[FlatFileConnection]"
                   connectionManagerID="Package.ConnectionManagers[Products_CSV]"
                   connectionManagerRefId="Package.ConnectionManagers[Products_CSV]"
                   name="FlatFileConnection" />
               </connections>
               <outputs>
                 <output
-                  refId="Package\Load_Dim_Product\Flat File Source.Outputs[Flat File Source Output]"
+                  refId="Package\\Load_Dim_Product\\Flat File Source.Outputs[Flat File Source Output]"
                   name="Flat File Source Output">
                   <externalMetadataColumns isUsed="False" />
                 </output>
               </outputs>
             </component>
             <component
-              refId="Package\Load_Dim_Product\Derived Column"
+              refId="Package\\Load_Dim_Product\\Derived Column"
               componentClassID="Microsoft.DerivedColumn"
               contactInfo="Derived Column;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;"
               description="Updates column values using expressions (REPLACENULL)"
@@ -195,7 +205,7 @@
               usesDispositions="true">
               <inputs>
                 <input
-                  refId="Package\Load_Dim_Product\Derived Column.Inputs[Derived Column Input]"
+                  refId="Package\\Load_Dim_Product\\Derived Column.Inputs[Derived Column Input]"
                   description="Input to the Derived Column Transformation"
                   name="Derived Column Input">
                   <externalMetadataColumns isUsed="False" />
@@ -203,17 +213,17 @@
               </inputs>
               <outputs>
                 <output
-                  refId="Package\Load_Dim_Product\Derived Column.Outputs[Derived Column Output]"
+                  refId="Package\\Load_Dim_Product\\Derived Column.Outputs[Derived Column Output]"
                   description="Default Output of the Derived Column Transformation"
                   exclusionGroup="1"
                   name="Derived Column Output"
-                  synchronousInputId="Package\Load_Dim_Product\Derived Column.Inputs[Derived Column Input]">
+                  synchronousInputId="Package\\Load_Dim_Product\\Derived Column.Inputs[Derived Column Input]">
                   <externalMetadataColumns isUsed="False" />
                 </output>
               </outputs>
             </component>
             <component
-              refId="Package\Load_Dim_Product\OLE DB Destination"
+              refId="Package\\Load_Dim_Product\\OLE DB Destination"
               componentClassID="Microsoft.OLEDBDestination"
               contactInfo="OLE DB Destination;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;"
               description="OLE DB Destination - Dim_Product"
@@ -230,7 +240,7 @@
               </properties>
               <connections>
                 <connection
-                  refId="Package\Load_Dim_Product\OLE DB Destination.Connections[OleDbConnection]"
+                  refId="Package\\Load_Dim_Product\\OLE DB Destination.Connections[OleDbConnection]"
                   connectionManagerID="Package.ConnectionManagers[Olist_DW]"
                   connectionManagerRefId="Package.ConnectionManagers[Olist_DW]"
                   description="Destination connection"
@@ -238,7 +248,7 @@
               </connections>
               <inputs>
                 <input
-                  refId="Package\Load_Dim_Product\OLE DB Destination.Inputs[OLE DB Destination Input]"
+                  refId="Package\\Load_Dim_Product\\OLE DB Destination.Inputs[OLE DB Destination Input]"
                   errorOrTruncationOperation="Insert"
                   errorRowDisposition="FailComponent"
                   hasSideEffects="true"
@@ -250,15 +260,15 @@
           </components>
           <paths>
             <path
-              refId="Package\Load_Dim_Product.Paths[Flat File Source Output]"
-              endId="Package\Load_Dim_Product\Derived Column.Inputs[Derived Column Input]"
+              refId="Package\\Load_Dim_Product.Paths[Flat File Source Output]"
+              endId="Package\\Load_Dim_Product\\Derived Column.Inputs[Derived Column Input]"
               name="Flat File Source Output"
-              startId="Package\Load_Dim_Product\Flat File Source.Outputs[Flat File Source Output]" />
+              startId="Package\\Load_Dim_Product\\Flat File Source.Outputs[Flat File Source Output]" />
             <path
-              refId="Package\Load_Dim_Product.Paths[Derived Column Output]"
-              endId="Package\Load_Dim_Product\OLE DB Destination.Inputs[OLE DB Destination Input]"
+              refId="Package\\Load_Dim_Product.Paths[Derived Column Output]"
+              endId="Package\\Load_Dim_Product\\OLE DB Destination.Inputs[OLE DB Destination Input]"
               name="Derived Column Output"
-              startId="Package\Load_Dim_Product\Derived Column.Outputs[Derived Column Output]" />
+              startId="Package\\Load_Dim_Product\\Derived Column.Outputs[Derived Column Output]" />
           </paths>
         </pipeline>
       </DTS:ObjectData>
@@ -268,7 +278,7 @@
     <!-- 3. DATA FLOW TASK: Load_Fact_Orders                                     -->
     <!-- ====================================================================== -->
     <DTS:Executable
-      DTS:refId="Package\Load_Fact_Orders"
+      DTS:refId="Package\\Load_Fact_Orders"
       DTS:CreationName="Microsoft.Pipeline"
       DTS:Description="Data Flow Task - Extracts Delivered Orders with Lookups"
       DTS:DTSID="{C46D93A5-AA43-6AAB-C554-8C370AF4B312}"
@@ -281,7 +291,7 @@
         <pipeline version="1">
           <components>
             <component
-              refId="Package\Load_Fact_Orders\OLE DB Source"
+              refId="Package\\Load_Fact_Orders\\OLE DB Source"
               componentClassID="Microsoft.OLEDBSource"
               contactInfo="OLE DB Source;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;"
               description="OLE DB Source - Delivered Orders Extraction"
@@ -295,21 +305,21 @@
               </properties>
               <connections>
                 <connection
-                  refId="Package\Load_Fact_Orders\OLE DB Source.Connections[OleDbConnection]"
+                  refId="Package\\Load_Fact_Orders\\OLE DB Source.Connections[OleDbConnection]"
                   connectionManagerID="Package.ConnectionManagers[Olist_OLTP]"
                   connectionManagerRefId="Package.ConnectionManagers[Olist_OLTP]"
                   name="OleDbConnection" />
               </connections>
               <outputs>
                 <output
-                  refId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output]"
+                  refId="Package\\Load_Fact_Orders\\OLE DB Source.Outputs[OLE DB Source Output]"
                   name="OLE DB Source Output">
                   <externalMetadataColumns isUsed="False" />
                 </output>
               </outputs>
             </component>
             <component
-              refId="Package\Load_Fact_Orders\Customer Lookup"
+              refId="Package\\Load_Fact_Orders\\Customer Lookup"
               componentClassID="Microsoft.Lookup"
               contactInfo="Lookup;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;"
               description="Lookup CustomerSK from Dim_Customer"
@@ -322,40 +332,40 @@
               </properties>
               <connections>
                 <connection
-                  refId="Package\Load_Fact_Orders\Customer Lookup.Connections[OleDbConnection]"
+                  refId="Package\\Load_Fact_Orders\\Customer Lookup.Connections[OleDbConnection]"
                   connectionManagerID="Package.ConnectionManagers[Olist_DW]"
                   connectionManagerRefId="Package.ConnectionManagers[Olist_DW]"
                   name="OleDbConnection" />
               </connections>
               <inputs>
                 <input
-                  refId="Package\Load_Fact_Orders\Customer Lookup.Inputs[Lookup Input]"
+                  refId="Package\\Load_Fact_Orders\\Customer Lookup.Inputs[Lookup Input]"
                   name="Lookup Input">
                   <externalMetadataColumns isUsed="False" />
                 </input>
               </inputs>
               <outputs>
                 <output
-                  refId="Package\Load_Fact_Orders\Customer Lookup.Outputs[Lookup Match Output]"
+                  refId="Package\\Load_Fact_Orders\\Customer Lookup.Outputs[Lookup Match Output]"
                   errorOrTruncationOperation="Lookup"
                   errorRowDisposition="IgnoreFailure"
                   exclusionGroup="1"
                   name="Lookup Match Output"
-                  synchronousInputId="Package\Load_Fact_Orders\Customer Lookup.Inputs[Lookup Input]">
+                  synchronousInputId="Package\\Load_Fact_Orders\\Customer Lookup.Inputs[Lookup Input]">
                   <externalMetadataColumns isUsed="False" />
                 </output>
                 <output
-                  refId="Package\Load_Fact_Orders\Customer Lookup.Outputs[Lookup No Match Output]"
+                  refId="Package\\Load_Fact_Orders\\Customer Lookup.Outputs[Lookup No Match Output]"
                   description="The Lookup output that handles rows with no matching entries in the reference dataset."
                   exclusionGroup="1"
                   name="Lookup No Match Output"
-                  synchronousInputId="Package\Load_Fact_Orders\Customer Lookup.Inputs[Lookup Input]">
+                  synchronousInputId="Package\\Load_Fact_Orders\\Customer Lookup.Inputs[Lookup Input]">
                   <externalMetadataColumns isUsed="False" />
                 </output>
               </outputs>
             </component>
             <component
-              refId="Package\Load_Fact_Orders\Product Lookup"
+              refId="Package\\Load_Fact_Orders\\Product Lookup"
               componentClassID="Microsoft.Lookup"
               contactInfo="Lookup;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;"
               description="Lookup ProductSK from Dim_Product"
@@ -368,39 +378,39 @@
               </properties>
               <connections>
                 <connection
-                  refId="Package\Load_Fact_Orders\Product Lookup.Connections[OleDbConnection]"
+                  refId="Package\\Load_Fact_Orders\\Product Lookup.Connections[OleDbConnection]"
                   connectionManagerID="Package.ConnectionManagers[Olist_DW]"
                   connectionManagerRefId="Package.ConnectionManagers[Olist_DW]"
                   name="OleDbConnection" />
               </connections>
               <inputs>
                 <input
-                  refId="Package\Load_Fact_Orders\Product Lookup.Inputs[Lookup Input]"
+                  refId="Package\\Load_Fact_Orders\\Product Lookup.Inputs[Lookup Input]"
                   name="Lookup Input">
                   <externalMetadataColumns isUsed="False" />
                 </input>
               </inputs>
               <outputs>
                 <output
-                  refId="Package\Load_Fact_Orders\Product Lookup.Outputs[Lookup Match Output]"
+                  refId="Package\\Load_Fact_Orders\\Product Lookup.Outputs[Lookup Match Output]"
                   errorOrTruncationOperation="Lookup"
                   errorRowDisposition="IgnoreFailure"
                   exclusionGroup="1"
                   name="Lookup Match Output"
-                  synchronousInputId="Package\Load_Fact_Orders\Product Lookup.Inputs[Lookup Input]">
+                  synchronousInputId="Package\\Load_Fact_Orders\\Product Lookup.Inputs[Lookup Input]">
                   <externalMetadataColumns isUsed="False" />
                 </output>
                 <output
-                  refId="Package\Load_Fact_Orders\Product Lookup.Outputs[Lookup No Match Output]"
+                  refId="Package\\Load_Fact_Orders\\Product Lookup.Outputs[Lookup No Match Output]"
                   exclusionGroup="1"
                   name="Lookup No Match Output"
-                  synchronousInputId="Package\Load_Fact_Orders\Product Lookup.Inputs[Lookup Input]">
+                  synchronousInputId="Package\\Load_Fact_Orders\\Product Lookup.Inputs[Lookup Input]">
                   <externalMetadataColumns isUsed="False" />
                 </output>
               </outputs>
             </component>
             <component
-              refId="Package\Load_Fact_Orders\Seller Lookup"
+              refId="Package\\Load_Fact_Orders\\Seller Lookup"
               componentClassID="Microsoft.Lookup"
               contactInfo="Lookup;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;"
               description="Lookup SellerSK from Dim_Seller with Ignore Failure"
@@ -414,39 +424,39 @@
               </properties>
               <connections>
                 <connection
-                  refId="Package\Load_Fact_Orders\Seller Lookup.Connections[OleDbConnection]"
+                  refId="Package\\Load_Fact_Orders\\Seller Lookup.Connections[OleDbConnection]"
                   connectionManagerID="Package.ConnectionManagers[Olist_DW]"
                   connectionManagerRefId="Package.ConnectionManagers[Olist_DW]"
                   name="OleDbConnection" />
               </connections>
               <inputs>
                 <input
-                  refId="Package\Load_Fact_Orders\Seller Lookup.Inputs[Lookup Input]"
+                  refId="Package\\Load_Fact_Orders\\Seller Lookup.Inputs[Lookup Input]"
                   name="Lookup Input">
                   <externalMetadataColumns isUsed="False" />
                 </input>
               </inputs>
               <outputs>
                 <output
-                  refId="Package\Load_Fact_Orders\Seller Lookup.Outputs[Lookup Match Output]"
+                  refId="Package\\Load_Fact_Orders\\Seller Lookup.Outputs[Lookup Match Output]"
                   errorOrTruncationOperation="Lookup"
                   errorRowDisposition="IgnoreFailure"
                   exclusionGroup="1"
                   name="Lookup Match Output"
-                  synchronousInputId="Package\Load_Fact_Orders\Seller Lookup.Inputs[Lookup Input]">
+                  synchronousInputId="Package\\Load_Fact_Orders\\Seller Lookup.Inputs[Lookup Input]">
                   <externalMetadataColumns isUsed="False" />
                 </output>
                 <output
-                  refId="Package\Load_Fact_Orders\Seller Lookup.Outputs[Lookup No Match Output]"
+                  refId="Package\\Load_Fact_Orders\\Seller Lookup.Outputs[Lookup No Match Output]"
                   exclusionGroup="1"
                   name="Lookup No Match Output"
-                  synchronousInputId="Package\Load_Fact_Orders\Seller Lookup.Inputs[Lookup Input]">
+                  synchronousInputId="Package\\Load_Fact_Orders\\Seller Lookup.Inputs[Lookup Input]">
                   <externalMetadataColumns isUsed="False" />
                 </output>
               </outputs>
             </component>
             <component
-              refId="Package\Load_Fact_Orders\OLE DB Destination"
+              refId="Package\\Load_Fact_Orders\\OLE DB Destination"
               componentClassID="Microsoft.OLEDBDestination"
               contactInfo="OLE DB Destination;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;"
               description="OLE DB Destination - Fact_Orders"
@@ -463,14 +473,14 @@
               </properties>
               <connections>
                 <connection
-                  refId="Package\Load_Fact_Orders\OLE DB Destination.Connections[OleDbConnection]"
+                  refId="Package\\Load_Fact_Orders\\OLE DB Destination.Connections[OleDbConnection]"
                   connectionManagerID="Package.ConnectionManagers[Olist_DW]"
                   connectionManagerRefId="Package.ConnectionManagers[Olist_DW]"
                   name="OleDbConnection" />
               </connections>
               <inputs>
                 <input
-                  refId="Package\Load_Fact_Orders\OLE DB Destination.Inputs[OLE DB Destination Input]"
+                  refId="Package\\Load_Fact_Orders\\OLE DB Destination.Inputs[OLE DB Destination Input]"
                   errorOrTruncationOperation="Insert"
                   errorRowDisposition="FailComponent"
                   hasSideEffects="true"
@@ -482,25 +492,25 @@
           </components>
           <paths>
             <path
-              refId="Package\Load_Fact_Orders.Paths[OLE DB Source Output]"
-              endId="Package\Load_Fact_Orders\Customer Lookup.Inputs[Lookup Input]"
+              refId="Package\\Load_Fact_Orders.Paths[OLE DB Source Output]"
+              endId="Package\\Load_Fact_Orders\\Customer Lookup.Inputs[Lookup Input]"
               name="OLE DB Source Output"
-              startId="Package\Load_Fact_Orders\OLE DB Source.Outputs[OLE DB Source Output]" />
+              startId="Package\\Load_Fact_Orders\\OLE DB Source.Outputs[OLE DB Source Output]" />
             <path
-              refId="Package\Load_Fact_Orders.Paths[Customer Match Output]"
-              endId="Package\Load_Fact_Orders\Product Lookup.Inputs[Lookup Input]"
+              refId="Package\\Load_Fact_Orders.Paths[Customer Match Output]"
+              endId="Package\\Load_Fact_Orders\\Product Lookup.Inputs[Lookup Input]"
               name="Customer Match Output"
-              startId="Package\Load_Fact_Orders\Customer Lookup.Outputs[Lookup Match Output]" />
+              startId="Package\\Load_Fact_Orders\\Customer Lookup.Outputs[Lookup Match Output]" />
             <path
-              refId="Package\Load_Fact_Orders.Paths[Product Match Output]"
-              endId="Package\Load_Fact_Orders\Seller Lookup.Inputs[Lookup Input]"
+              refId="Package\\Load_Fact_Orders.Paths[Product Match Output]"
+              endId="Package\\Load_Fact_Orders\\Seller Lookup.Inputs[Lookup Input]"
               name="Product Match Output"
-              startId="Package\Load_Fact_Orders\Product Lookup.Outputs[Lookup Match Output]" />
+              startId="Package\\Load_Fact_Orders\\Product Lookup.Outputs[Lookup Match Output]" />
             <path
-              refId="Package\Load_Fact_Orders.Paths[Seller Match Output]"
-              endId="Package\Load_Fact_Orders\OLE DB Destination.Inputs[OLE DB Destination Input]"
+              refId="Package\\Load_Fact_Orders.Paths[Seller Match Output]"
+              endId="Package\\Load_Fact_Orders\\OLE DB Destination.Inputs[OLE DB Destination Input]"
               name="Seller Match Output"
-              startId="Package\Load_Fact_Orders\Seller Lookup.Outputs[Lookup Match Output]" />
+              startId="Package\\Load_Fact_Orders\\Seller Lookup.Outputs[Lookup Match Output]" />
           </paths>
         </pipeline>
       </DTS:ObjectData>
@@ -512,18 +522,18 @@
       DTS:refId="Package.PrecedenceConstraints[Constraint_Customer_to_Product]"
       DTS:CreationName=""
       DTS:DTSID="{D57EA4B6-BB54-7BBC-D665-9D481BA5C423}"
-      DTS:From="Package\Load_Dim_Customer"
+      DTS:From="Package\\Load_Dim_Customer"
       DTS:LogicalAnd="True"
       DTS:ObjectName="Constraint_Customer_to_Product"
-      DTS:To="Package\Load_Dim_Product" />
+      DTS:To="Package\\Load_Dim_Product" />
     <DTS:PrecedenceConstraint
       DTS:refId="Package.PrecedenceConstraints[Constraint_Product_to_Fact]"
       DTS:CreationName=""
       DTS:DTSID="{E68FB5C7-CC65-8CCD-E776-AE592CB6D534}"
-      DTS:From="Package\Load_Dim_Product"
+      DTS:From="Package\\Load_Dim_Product"
       DTS:LogicalAnd="True"
       DTS:ObjectName="Constraint_Product_to_Fact"
-      DTS:To="Package\Load_Fact_Orders" />
+      DTS:To="Package\\Load_Fact_Orders" />
   </DTS:PrecedenceConstraints>
 
   <!-- ====================================================================== -->
@@ -534,15 +544,15 @@
   <!-- Control Flow Canvas -->
   <NodeLayout
     Size="195,42"
-    Id="Package\Load_Dim_Customer"
+    Id="Package\\Load_Dim_Customer"
     TopLeft="160,40" />
   <NodeLayout
     Size="185,42"
-    Id="Package\Load_Dim_Product"
+    Id="Package\\Load_Dim_Product"
     TopLeft="165,130" />
   <NodeLayout
     Size="180,42"
-    Id="Package\Load_Fact_Orders"
+    Id="Package\\Load_Fact_Orders"
     TopLeft="168,220" />
   <EdgeLayout
     Id="Package.PrecedenceConstraints[Constraint_Customer_to_Product]"
@@ -592,14 +602,14 @@
   <!-- Data Flow Canvas 1: Load_Dim_Customer -->
   <NodeLayout
     Size="150,42"
-    Id="Package\Load_Dim_Customer\OLE DB Source"
+    Id="Package\\Load_Dim_Customer\\OLE DB Source"
     TopLeft="230,50" />
   <NodeLayout
     Size="171,42"
-    Id="Package\Load_Dim_Customer\OLE DB Destination"
+    Id="Package\\Load_Dim_Customer\\OLE DB Destination"
     TopLeft="220,160" />
   <EdgeLayout
-    Id="Package\Load_Dim_Customer.Paths[OLE DB Source Output]"
+    Id="Package\\Load_Dim_Customer.Paths[OLE DB Source Output]"
     TopLeft="305,92">
     <EdgeLayout.Curve>
       <mssgle:Curve
@@ -624,18 +634,18 @@
   <!-- Data Flow Canvas 2: Load_Dim_Product -->
   <NodeLayout
     Size="151,42"
-    Id="Package\Load_Dim_Product\Flat File Source"
+    Id="Package\\Load_Dim_Product\\Flat File Source"
     TopLeft="230,40" />
   <NodeLayout
     Size="154,42"
-    Id="Package\Load_Dim_Product\Derived Column"
+    Id="Package\\Load_Dim_Product\\Derived Column"
     TopLeft="228,130" />
   <NodeLayout
     Size="171,42"
-    Id="Package\Load_Dim_Product\OLE DB Destination"
+    Id="Package\\Load_Dim_Product\\OLE DB Destination"
     TopLeft="220,220" />
   <EdgeLayout
-    Id="Package\Load_Dim_Product.Paths[Flat File Source Output]"
+    Id="Package\\Load_Dim_Product.Paths[Flat File Source Output]"
     TopLeft="305,82">
     <EdgeLayout.Curve>
       <mssgle:Curve
@@ -657,7 +667,7 @@
     </EdgeLayout.Labels>
   </EdgeLayout>
   <EdgeLayout
-    Id="Package\Load_Dim_Product.Paths[Derived Column Output]"
+    Id="Package\\Load_Dim_Product.Paths[Derived Column Output]"
     TopLeft="305,172">
     <EdgeLayout.Curve>
       <mssgle:Curve
@@ -682,26 +692,26 @@
   <!-- Data Flow Canvas 3: Load_Fact_Orders -->
   <NodeLayout
     Size="150,42"
-    Id="Package\Load_Fact_Orders\OLE DB Source"
+    Id="Package\\Load_Fact_Orders\\OLE DB Source"
     TopLeft="245,30" />
   <NodeLayout
     Size="163,42"
-    Id="Package\Load_Fact_Orders\Customer Lookup"
+    Id="Package\\Load_Fact_Orders\\Customer Lookup"
     TopLeft="238,110" />
   <NodeLayout
     Size="154,42"
-    Id="Package\Load_Fact_Orders\Product Lookup"
+    Id="Package\\Load_Fact_Orders\\Product Lookup"
     TopLeft="243,190" />
   <NodeLayout
     Size="144,42"
-    Id="Package\Load_Fact_Orders\Seller Lookup"
+    Id="Package\\Load_Fact_Orders\\Seller Lookup"
     TopLeft="248,270" />
   <NodeLayout
     Size="171,42"
-    Id="Package\Load_Fact_Orders\OLE DB Destination"
+    Id="Package\\Load_Fact_Orders\\OLE DB Destination"
     TopLeft="234,350" />
   <EdgeLayout
-    Id="Package\Load_Fact_Orders.Paths[OLE DB Source Output]"
+    Id="Package\\Load_Fact_Orders.Paths[OLE DB Source Output]"
     TopLeft="320,72">
     <EdgeLayout.Curve>
       <mssgle:Curve
@@ -723,7 +733,7 @@
     </EdgeLayout.Labels>
   </EdgeLayout>
   <EdgeLayout
-    Id="Package\Load_Fact_Orders.Paths[Customer Match Output]"
+    Id="Package\\Load_Fact_Orders.Paths[Customer Match Output]"
     TopLeft="320,152">
     <EdgeLayout.Curve>
       <mssgle:Curve
@@ -745,7 +755,7 @@
     </EdgeLayout.Labels>
   </EdgeLayout>
   <EdgeLayout
-    Id="Package\Load_Fact_Orders.Paths[Product Match Output]"
+    Id="Package\\Load_Fact_Orders.Paths[Product Match Output]"
     TopLeft="320,232">
     <EdgeLayout.Curve>
       <mssgle:Curve
@@ -767,7 +777,7 @@
     </EdgeLayout.Labels>
   </EdgeLayout>
   <EdgeLayout
-    Id="Package\Load_Fact_Orders.Paths[Seller Match Output]"
+    Id="Package\\Load_Fact_Orders.Paths[Seller Match Output]"
     TopLeft="320,312">
     <EdgeLayout.Curve>
       <mssgle:Curve
@@ -791,3 +801,10 @@
 </GraphLayout>
 ]]></DTS:DesignTimeProperties>
 </DTS:Executable>
+'''
+
+with open(out_path, "w", encoding="utf-8") as f:
+    f.write(package_xml)
+
+print(f"Full Visual Studio SSIS package generated at: {out_path}")
+
